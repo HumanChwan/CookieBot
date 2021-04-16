@@ -193,7 +193,7 @@ async def on_message(messageMETA):
                 await messageMETA.channel.send(':pensive:')
                 return
             
-            await messageMETA.channel.send('Nice there you go, Your expression yieldseth : ' + '**' + f'{Answer}' + '**')
+            await messageMETA.channel.send('Nice there you go, Your expression yieldeth : ' + '**' + f'{Answer}' + '**')
             return
     else:
         return
