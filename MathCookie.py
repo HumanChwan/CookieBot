@@ -1,0 +1,155 @@
+def precedence(operator):
+    if operator == '+' or operator == '-':
+        return 1
+    elif operator == '*' or operator == '/' or operator == '%':
+        return 2
+    elif operator == '^':
+        return 3
+    else:
+        return 0
+
+
+def CheckInteger(num, If_Dot):
+    cnt = 0
+    for i in num:
+        if i == '.':
+            cnt += 1
+            if cnt == If_Dot+1:
+                return False 
+        elif i < '0' or '9' < i:
+            return False
+
+    return True
+
+
+def Best(numStr):
+    if numStr[0] == '.':
+        numStr = '0' + numStr
+    elif numStr[-1] == '.':
+        numStr += '0'
+
+    return numStr
+
+def InfixtoPostix(inf):
+    stack = []
+    PostfixList = []
+    for j in inf:
+        if CheckInteger(j, True):
+            PostfixList.append(Best(j))
+        elif j == '(':
+            stack.append('(')
+        elif j == ')':
+            while stack[-1] != '(' and stack:
+                PostfixList.append(stack[-1])
+                stack.pop()
+            stack.pop()
+        elif j == '^':
+            stack.append('^')
+        else:
+            if stack and precedence(j) >= precedence(stack[-1]):
+                stack.append(j)
+            else:
+                while stack and precedence(j) < precedence(stack[-1]):
+                    PostfixList.append(stack[-1])
+                    stack.pop()
+                stack.append(j)
+        
+    while stack:
+        PostfixList.append(stack[-1])
+        stack.pop()
+    return PostfixList
+
+
+def addition(a, b):
+    return a+b
+
+def subtraction(a, b):
+    return a-b
+
+def multiplication(a, b):
+    return a*b
+
+def division(a, b):
+    return a/b
+
+def exponent(a, b):
+    return a**b
+
+def modulo(a, b):
+    return int(a)%int(b)
+
+
+def Arth(func, a, b):
+    return func(a, b)
+
+function_name = {
+    '+' : addition,
+    '-' : subtraction,
+    '*' : multiplication,
+    '/' : division,
+    '^' : exponent,
+    '%' : modulo
+}
+
+def evaluate(PostfixList):
+    stack = []
+    for j in PostfixList:
+        if CheckInteger(j, True):
+            stack.append(j)
+        else:
+            one = float(stack[-1])
+            stack.pop()
+            two = float(stack[-1])
+            stack.pop()
+            stack.append(str(Arth(function_name[j], two, one)))
+    answer = float(stack[-1])
+    return answer
+
+
+def stringToInfixList(inf):
+    cache = ''
+    FinalInfixList = []
+    for c in inf:
+        if c == ' ':
+            if cache != '':
+                FinalInfixList.append(cache)
+                cache = ''
+        elif '0' <= c <= '9' or c == '.':
+            cache += c
+        elif c in {'+', '-', '*', '/', '^', '(', ')','%'}:
+            if cache != '':
+                FinalInfixList.append(cache)
+                cache = ''
+            FinalInfixList.append(c)
+        else:
+            return None
+    if cache != '':
+        FinalInfixList.append(cache)
+        cache = ''
+    return FinalInfixList
+
+
+def ExpressionProcessor(InfixString):
+    InfixString = InfixString.replace('modulo', '%')
+    InfixString = InfixString.replace('mod', '%')
+    InfixString = InfixString.replace('[', '(')
+    InfixString = InfixString.replace(']', ')')
+    InfixString = InfixString.replace('{', '(')
+    InfixString = InfixString.replace('}', ')')
+    InfixList = stringToInfixList(InfixString)
+    if not InfixList:
+        return None
+    PostfixList = InfixtoPostix(InfixList)
+
+    return evaluate(PostfixList)
+
+def MathCookie(InfixLst):
+    if not InfixLst:
+        return 'Incorrect expression? At least get your shit right man :pensive:'
+
+    Answer = ExpressionProcessor(' '.join(InfixLst))
+
+    if Answer == None:
+        return 'Incorrect expression? At least get your shit right man :pensive:'
+
+    return 'Nice there you go, Your expression yieldeth : ' + '**' + f'{Answer}' + '**'

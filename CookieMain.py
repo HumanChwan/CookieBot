@@ -3,6 +3,7 @@ import os
 import discord
 from dotenv import load_dotenv
 import random
+import MathCookie
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -25,149 +26,6 @@ async def on_member_join(member):
 
 # @client.event
 # async def on_guild_join(guild):
-
-
-def precedence(operator):
-    if operator == '+' or operator == '-':
-        return 1
-    elif operator == '*' or operator == '/':
-        return 2
-    elif operator == '^':
-        return 3
-    else:
-        return 0
-
-
-def CheckInteger(num, If_Dot):
-    cnt = 0
-    for i in num:
-        if i == '.':
-            cnt += 1
-            if cnt == If_Dot+1:
-                return False 
-        elif i < '0' or '9' < i:
-            return False
-
-    return True
-
-
-def Best(numStr):
-    if numStr[0] == '.':
-        numStr = '0' + numStr
-    elif numStr[-1] == '.':
-        numStr += '0'
-
-    return numStr
-
-def InfixtoPostix(inf):
-    stack = []
-    PostfixList = []
-    for j in inf:
-        if CheckInteger(j, True):
-            PostfixList.append(Best(j))
-        elif j == '(':
-            stack.append('(')
-        elif j == ')':
-            while stack[-1] != '(' and stack:
-                PostfixList.append(stack[-1])
-                stack.pop()
-            stack.pop()
-        elif j == '^':
-            stack.append('^')
-        else:
-            if stack and precedence(j) >= precedence(stack[-1]):
-                stack.append(j)
-            else:
-                while stack and precedence(j) < precedence(stack[-1]):
-                    PostfixList.append(stack[-1])
-                    stack.pop()
-                stack.append(j)
-        
-    while stack:
-        PostfixList.append(stack[-1])
-        stack.pop()
-    return PostfixList
-
-
-def addition(a, b):
-    return a+b
-
-def subtraction(a, b):
-    return a-b
-
-def multiplication(a, b):
-    return a*b
-
-def division(a, b):
-    return a/b
-
-def exponent(a, b):
-    return a**b
-
-
-def Arth(func, a, b):
-    return func(a, b)
-
-function_name = {
-    '+' : addition,
-    '-' : subtraction,
-    '*' : multiplication,
-    '/' : division,
-    '^' : exponent
-}
-
-def evaluate(PostfixList):
-    stack = []
-    for j in PostfixList:
-        if CheckInteger(j, True):
-            stack.append(j)
-        else:
-            one = float(stack[-1])
-            stack.pop()
-            two = float(stack[-1])
-            stack.pop()
-            stack.append(str(Arth(function_name[j], two, one)))
-    answer = float(stack[-1])
-    return answer
-
-
-def stringToInfixList(inf):
-    cache = ''
-    FinalInfixList = []
-    for c in inf:
-        if c == ' ' and cache != '':
-            FinalInfixList.append(cache)
-            cache = ''
-        elif '0' <= c <= '9' or c == '.':
-            cache += c
-        elif c in {'+', '-', '*', '/', '^', '(', ')'}:
-            if cache != '':
-                FinalInfixList.append(cache)
-                cache = ''
-            FinalInfixList.append(c)
-    if cache != '':
-        FinalInfixList.append(cache)
-        cache = ''
-    return FinalInfixList
-
-
-def ExpressionProcessor(InfixString):
-    InfixList = stringToInfixList(InfixString)
-    PostfixList = InfixtoPostix(InfixList)
-
-    return evaluate(PostfixList)
-
-def MathCookie(InfixLst):
-    if not InfixLst:
-        return 'Incorrect expression? At least get your shit right man :pensive:'
-
-    Answer = ExpressionProcessor(' '.join(InfixLst))
-
-    if Answer == None:
-        return 'Incorrect expression? At least get your shit right man :pensive:'
-
-    return 'Nice there you go, Your expression yieldeth : ' + '**' + f'{Answer}' + '**'
-    
 
 # def helpTXT():
 #     return (
@@ -228,7 +86,7 @@ async def on_message(messageMETA):
 
     PrefixInUse = PrefixAcceptable
 
-    if CheckInteger(messageMETA.content, False):
+    if MathCookie.CheckInteger(messageMETA.content, False):
         if messageMETA.author in PlayersRn:
             if len(messageMETA.content) != 4:
                 await messageMETA.channel.send('Wrong Input Style')
@@ -253,6 +111,7 @@ async def on_message(messageMETA):
 
                 if messageMETA.author in PlayersRn and PlayersRn[messageMETA.author][2] == 0:
                     embed_two = discord.Embed(title='Ran Out of tries :disappointed:', description=f'<@{messageMETA.author.id}> Better luck next Time UwU')
+                    embed_two.add_field(name='Random Number was :', value=''.join(PlayersRn[messageMETA.author][0]))
                     PlayersRn.pop(messageMETA.author)
                     await messageMETA.channel.send(content=None, embed=embed_two)
     
@@ -279,7 +138,7 @@ async def on_message(messageMETA):
         elif MessageLst[0] == 'math':
             MessageLst.remove('math')
 
-            FinalPrint = MathCookie(MessageLst)
+            FinalPrint = MathCookie.MathCookie(MessageLst)
 
             await messageMETA.channel.send(f'\n <@{messageMETA.author.id}> ' + FinalPrint)
 
@@ -298,7 +157,7 @@ async def on_message(messageMETA):
                 if messageMETA.author in PlayersRn:
                     await messageMETA.channel.send('Already initiatd!! UwU')
                     return
-                PlayersRn.update({messageMETA.author : [RandomList(),None, 1]})
+                PlayersRn.update({messageMETA.author : [RandomList(),None, 10]})
                 await messageMETA.channel.send(f'<@{messageMETA.author.id}>'  + ' Game has now initiated ')
                 print(PlayersRn[messageMETA.author][0])
             elif MessageLst[0].lower() in {'endgame','terminate', 'quit','exit'}:
