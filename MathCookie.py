@@ -1,10 +1,14 @@
 def precedence(operator):
     if operator == '+' or operator == '-':
         return 1
-    elif operator == '*' or operator == '/' or operator == '%':
+    elif operator == '%':
         return 2
-    elif operator == '^':
+    elif operator == '*':
         return 3
+    elif operator == '/': 
+        return 4
+    elif operator == '^':
+        return 5
     else:
         return 0
 
@@ -41,8 +45,14 @@ def InfixtoPostix(inf):
         elif j == ')':
             while stack[-1] != '(' and stack:
                 PostfixList.append(stack[-1])
+                try:
+                    stack.pop()
+                except IndexError:
+                    return None
+            try:
                 stack.pop()
-            stack.pop()
+            except IndexError:
+                return None
         elif j == '^':
             stack.append('^')
         else:
@@ -51,12 +61,18 @@ def InfixtoPostix(inf):
             else:
                 while stack and precedence(j) < precedence(stack[-1]):
                     PostfixList.append(stack[-1])
-                    stack.pop()
+                    try:
+                        stack.pop()
+                    except IndexError:
+                        return None
                 stack.append(j)
         
     while stack:
         PostfixList.append(stack[-1])
-        stack.pop()
+        try:
+            stack.pop()
+        except IndexError:
+            return None
     return PostfixList
 
 
@@ -97,10 +113,16 @@ def evaluate(PostfixList):
         if CheckInteger(j, True):
             stack.append(j)
         else:
-            one = float(stack[-1])
-            stack.pop()
-            two = float(stack[-1])
-            stack.pop()
+            try:
+                one = float(stack[-1])
+                stack.pop()
+            except (ValueError, IndexError):
+                return None
+            try:
+                two = float(stack[-1])
+                stack.pop()
+            except (ValueError, IndexError):
+                return None
             stack.append(str(Arth(function_name[j], two, one)))
     answer = float(stack[-1])
     return answer
@@ -140,6 +162,9 @@ def ExpressionProcessor(InfixString):
     if not InfixList:
         return None
     PostfixList = InfixtoPostix(InfixList)
+
+    if not PostfixList:
+        return None
 
     return evaluate(PostfixList)
 
