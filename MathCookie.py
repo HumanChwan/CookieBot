@@ -1,3 +1,11 @@
+import random
+
+def RandomList():
+    first10 = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+    while first10[0] == '0':
+        random.shuffle(first10)
+    return [first10[i] for i in range(4)]
+
 def precedence(operator):
     if operator == '+' or operator == '-':
         return 1
@@ -168,6 +176,11 @@ def ExpressionProcessor(InfixString):
 
     return evaluate(PostfixList)
 
+
+def RandomBtwn(start: int, end: int) -> (int):
+    return random.randint(start, end)
+
+
 def MathCookie(InfixLst):
     if not InfixLst:
         return 'Incorrect expression? At least get your shit right man :pensive:'
@@ -176,5 +189,7 @@ def MathCookie(InfixLst):
 
     if Answer == None:
         return 'Incorrect expression? At least get your shit right man :pensive:'
+
+    Answer = round(Answer, 4)
 
     return 'Nice there you go, Your expression yieldeth : ' + '**' + f'{Answer}' + '**'

@@ -3,8 +3,8 @@ import os
 import discord
 from dotenv import load_dotenv
 import MathCookie
-import CoolGameHelp
 import CoolGameFunc as cgf
+import Send
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -30,12 +30,14 @@ async def on_member_join(member):
 
 PlayersRn = {}
 
+HelpCmd = ['help', 'cmd', 'command']
+QuitCmd = ['endgame', 'terminate', 'quit', 'exit']
 PrefixAcceptable = ['cookie', 'ck']
 
 @client.event
 async def on_message(messageMETA):
     global PlayersRn
- 
+
     if messageMETA.author.bot:
         return
 
@@ -43,7 +45,7 @@ async def on_message(messageMETA):
 
     if MathCookie.CheckInteger(messageMETA.content, False):
         if messageMETA.author in PlayersRn:
-            
+
             if len(messageMETA.content) != 4:
                 await messageMETA.channel.send('Wrong Input Style')
 
@@ -74,10 +76,10 @@ async def on_message(messageMETA):
                     embed_two.add_field(name='Random Number was :', value=''.join(PlayersRn[messageMETA.author][0]))
 
                     PlayersRn.pop(messageMETA.author)
-                    
+
                     await messageMETA.channel.send(content=None, embed=embed_two)
 
-    MessageLst = messageMETA.content.replace('`', '').replace('_', '').split()
+    MessageLst = messageMETA.content.replace('`', '').replace('_', '').replace('|', '').split()
 
     if not MessageLst:
         return
@@ -86,82 +88,76 @@ async def on_message(messageMETA):
         MessageLst.remove(MessageLst[0])
 
         if not MessageLst:
-            await messageMETA.channel.send('**Dood cookie? cookie what?** Now take this, idc')
-            await messageMETA.channel.send(':cookie:')
+            await Send.CookieQuote(messageMETA.channel)
             return
 
-        if MessageLst[0].lower() in {'help', 'cmd', 'command'}: 
-
-            embed_boi = discord.Embed(title="Command/Help", description="Shows the Commands and General overthrough of the Bot")
-            embed_boi.add_field(name='ck CoolGame', value='ck CoolGame help\n ck CoolGame init\n ck CoolGame Terminate')
-            embed_boi.add_field(name='ck math <expression>', value='\nCan Solve Math expressions : presently +, -, *, /, ^ are supported.')
-
-            await messageMETA.channel.send(content=None, embed=embed_boi)
+        if MessageLst[0].lower() in HelpCmd:
+            await Send.EmbedHelp(messageMETA.channel)
 
         elif MessageLst[0] == 'math':
             MessageLst.remove('math')
 
             FinalPrint = MathCookie.MathCookie(MessageLst)
 
-            await messageMETA.channel.send(f'\n <@{messageMETA.author.id}> ' + FinalPrint)
+            await messageMETA.channel.send(f'\n :cookie: **{messageMETA.author.name} |** ' + FinalPrint)
 
         elif MessageLst[0].lower() == 'coolgame':
             MessageLst.remove(MessageLst[0])
 
-            if not MessageLst or MessageLst[0].lower() in {'help', 'cmd', 'command'}:
-
-                embed_boi = discord.Embed(title='CoolGame Cmds and Help', description='CoolGame Commands')
-                HelpCool = CoolGameHelp.helpCoolGame()
-
-                for i in range(len(HelpCool)):
-                    embed_boi.add_field(name=str(i+int('1')) + '.', value=HelpCool[i])
-
-                embed_boi.add_field(name='_ _', value='_ _')
-                embed_boi.add_field(name='HAVE FUN!', value='_ _')
-
-                await messageMETA.channel.send(content=None, embed=embed_boi)
+            if not MessageLst or MessageLst[0].lower() in HelpCmd:
+                await Send.EmbedHelpCG(messageMETA.channel)
 
             elif MessageLst[0] == 'init':
                 if messageMETA.author in PlayersRn:
-                    await messageMETA.channel.send('Already initiatd!! UwU')
+                    await messageMETA.channel.send('Already initiated!! UwU')
                     return
 
-                PlayersRn.update({messageMETA.author : [cgf.RandomList(), None, 10]})
+                PlayersRn.update({messageMETA.author : [MathCookie.RandomList(), None, 10]})
 
                 await messageMETA.channel.send(f'<@{messageMETA.author.id}>'  + ' Game has now initiated ')
 
-            elif MessageLst[0].lower() in {'endgame','terminate', 'quit','exit'}:
+            elif MessageLst[0].lower() in QuitCmd:
                 if messageMETA.author in PlayersRn:
-                    await messageMETA.channel.send(f'<@{messageMETA.author.id}> Game terminted :frowning:')
+                    await Send.GameTerminate(messageMETA)
+
                     PlayersRn.pop(messageMETA.author)
                     return
                 else:
                     await messageMETA.channel.send(f'<@{messageMETA.author.id}> LOL what do you even wanna terminate, baka ka? :nerd:')
                     return
             else:
-                embed_boi = discord.Embed(title='CoolGame Cmds and Help', description='CoolGame Commands')
+                await Send.EmbedHelpCG(messageMETA.channel)
 
-                HelpCool = CoolGameHelp.helpCoolGame()
+        elif MessageLst[0].lower() in {'simp', 'simprate', 'gay', 'gayrate'}:
+            Boi = MathCookie.RandomBtwn(0, 100)
+            mention = messageMETA.mentions
+            ToBeMentioned = f'<@{messageMETA.author.id}>'
 
-                for i in range(len(HelpCool)):
-                    embed_boi.add_field(name=str(i+int('1')) + '.', value=HelpCool[i])
+            if mention:
+                ToBeMentioned = f'<@{mention[0].id}>'
 
-                embed_boi.add_field(name='_ _', value='_ _')
-                embed_boi.add_field(name='HAVE FUN!', value='_ _')
+            if not mention:
+                mention = messageMETA.role_mentions
+                if mention:
+                    ToBeMentioned = f'{mention[0].mention}'
 
-                await messageMETA.channel.send(content=None, embed=embed_boi)
+            end = 'gay'
+
+            if MessageLst[0].lower() in {'simp', 'simprate'}:
+                end = 'simp'
+
+            await messageMETA.channel.send(f'{ToBeMentioned} is {Boi}% {end}')
 
         else:
-            await messageMETA.channel.send('**Dood cookie? cookie what?** Now take this, idc')
-            await messageMETA.channel.send(':cookie:')
+            await Send.CookieQuote(messageMETA.channel)
 
-            return
-    elif MessageLst[0].lower() in {'endgame','terminate', 'quit','exit'}:
+
+    elif MessageLst[0].lower() in QuitCmd:
 
         if messageMETA.author in PlayersRn:
-            await messageMETA.channel.send(f'<@{messageMETA.author.id}> Game terminted :frowning:')
+            await Send.GameTerminate(messageMETA)
 
             PlayersRn.pop(messageMETA.author)
             return
 
-client.run(TOKEN)   
+client.run(TOKEN)
