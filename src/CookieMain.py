@@ -8,6 +8,7 @@ import Send
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+RimuruId = os.getenv('RimuruBoi')
 
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
@@ -18,6 +19,7 @@ async def on_connect():
 
 @client.event
 async def on_ready():
+    await client.change_presence(status=discord.Status.invisible)
     print(f'{client.user.name} launched!')
 
 @client.event
@@ -30,9 +32,11 @@ async def on_member_join(member):
 
 PlayersRn = {}
 
-HelpCmd = ['help', 'cmd', 'command']
-QuitCmd = ['endgame', 'terminate', 'quit', 'exit']
+HelpCmd = ['help', 'cmd', 'command', 'commands']
+QuitCmd = ['endgame', 'terminate', 'quit', 'exit', 'end']
 PrefixAcceptable = ['cookie', 'ck']
+
+RimuruSpamOn = False
 
 @client.event
 async def on_message(messageMETA):
@@ -43,11 +47,38 @@ async def on_message(messageMETA):
 
     PrefixInUse = PrefixAcceptable
 
+    # found = False
+    # # SPAM MOMENT OREKI
+    # if messageMETA.content == 'spam begin':
+    #     RimuruSpamOn = True
+    #     for guild in client.guilds:
+    #         for member in guild.members:
+    #             if member.id == 446282974942461960:
+    #                 found = True
+    #                 break
+    #         if found:
+    #             break
+    #     await member.create_dm() 
+    #     while RimuruSpamOn:
+    #         print('in')
+    #         await member.dm_channel.send(
+    #             'lol get spammed\n'
+    #             + 'lol get spammed\n'
+    #             + 'lol get spammed\n'
+    #             + 'lol get spammed\n'
+    #         )
+    #     return
+        
+    # if messageMETA.content == 'stop spam':
+    #     RimuruSpamOn = False
+
+    # return
+    
     if MathCookie.CheckInteger(messageMETA.content, False):
         if messageMETA.author in PlayersRn:
 
             if len(messageMETA.content) != 4:
-                await messageMETA.channel.send('Wrong Input Style')
+                await messageMETA.channel.send(f':cookie: **{messageMETA.author.name} |** Wrong Input Style')
 
             elif cgf.RepeatFound(messageMETA.content):
                 await messageMETA.channel.send(f'<@{messageMETA.author.id}> Found Repeated Digits in the entered number :expressionless:')

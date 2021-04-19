@@ -29,3 +29,4 @@ async def CookieQuote(channel):
 
 async def GameTerminate(messageMETA):
     await messageMETA.channel.send(f':cookie: **{messageMETA.author.name} |** Game terminted :frowning:')
+    
