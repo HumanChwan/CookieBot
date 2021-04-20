@@ -1,4 +1,5 @@
 import discord
+import dataService.data_service as dt_srv
 
 
 def help_cool_game():
@@ -6,7 +7,9 @@ def help_cool_game():
         'Upon initiating the game you would be asked to set some characteristics.',
         'After Setting of characteristics, you would asked to enter a Number(Four-Digit).',
         'The entered number would be processed as a guess.',
-        'After Processing \'Correct Digits\' and \'Correct Places\' would displayed which represent the correct digits and correct Places of the digits wrt to the random system generated number.',
+        'After Processing \'Correct Digits\' and \'Correct Places\' would displayed '
+        + 'which represent the correct digits and correct Places of the digits '
+        + 'wrt to the random system generated number.',
         'Following the end of maximum guesses or by guessing the Correct the number, game will end. :thumbsup:'
         'Time Out for entering the number is set at 5 minutes after which game will terminate automatically.',
         'Entering EndGame will terminate the game in between the game.',
@@ -48,11 +51,74 @@ async def game_terminate(message_meta):
     await message_meta.channel.send(f':cookie: **{message_meta.author.name} |** Game terminated :frowning:')
 
 
-# async def guild_join_message(guild):
-#     found = False
-#     welcome_channel = data_service.find_welcome_channel(guild.id)
-#
-#     if not welcome_channel:
-#         return
-#
-#     await welcome_channel.send('Hello New Join is me')
+async def guild_join_message(guild):
+    channel_id = dt_srv.find_welcome_channel_id(guild.id)
+
+    if not channel_id:
+        return
+
+    channel = guild.get_channel(channel_id)
+    await channel.send('Hi! Yo doods')
+
+
+async def wrong_input(message_meta: discord.message):
+    await message_meta.channel.send(f':cookie: **{message_meta.author.name} |**' +
+                                    ' Wrong Input Style :frowning:')
+
+
+async def incorrect_expression(message_meta: discord.message):
+    await message_meta.channel.send(f':cookie: **{message_meta.author.name} |**' +
+                                    ' Incorrect expression? At least get your shit right man :pensive:')
+
+
+async def correct_expression(answer: int, message_meta: discord.message):
+    await message_meta.channel.send(f':cookie: **{message_meta.author.name} |** Nice there you go,' +
+                               f' Your expression yieldeth : **{answer}**')
+
+
+async def parallel_init_error(message_meta: discord.message):
+    await message_meta.channel.send(f':cookie: **{message_meta.author.name} |**' +
+                                    ' Already initiated! UwU :smile:')
+
+
+async def init_successful(message_meta: discord.message):
+    embed_one = discord.Embed(title='Game has Initialised', description=f'Player: <@{message_meta.author.id}>')
+    embed_one.add_field(name='Tries : ', value='10', inline=False)
+    embed_one.set_image(url='https://static.toiimg.com/photo/72975551.cms')
+
+    await message_meta.channel.send(content=None, embed=embed_one)
+
+
+async def empty_terminate_error(message_meta: discord.message):
+    await message_meta.channel(f':cookie: **{message_meta.author.name} |**' +
+                               ' Lol! what do you wanna terminate? _B A K A_ :nerd:')
+
+
+async def terminate_successful(message_meta: discord.message):
+    await message_meta.channel.send(f':cookie: **{message_meta.author.name} |**' +
+                                    ' Game terminated _sad moment_ :disappointed:')
+
+
+async def repeat_input(message_meta: discord.message):
+    await message_meta.channel.send(f':cookie: **{message_meta.author.name} |**' +
+                                    ' Found Repeated Digits _sad moment_ :expressionless:')
+
+
+async def publish_result(message_meta: discord.message, partial_result, tries_left: int):
+    embed_one = discord.Embed(title='Guess Results', description=f'Player: <@{message_meta.author.id}>')
+    embed_one.add_field(name='Correct Digits:', value=str(partial_result[0]))
+    embed_one.add_field(name='Correct Places:', value=str(partial_result[1]))
+    embed_one.add_field(name='Tries Left:', value=str(tries_left))
+    if partial_result[1] == 4:
+        embed_one.add_field(name='Guessed the Correct Number :tada: :confetti_ball:', value='_ _')
+
+    await message_meta.channel.send(content=None, embed=embed_one)
+
+
+async def ran_out_of_tries(message_meta: discord.message, param):
+    embed_one = discord.Embed(title='Ran Out Of Tries :disappointed:',
+                              description=f'Player: <@{message_meta.author.id}>')
+    embed_one.add_field(name='Better Luck Next Time :thumbsup:', value='_ _', inline=False)
+    embed_one.add_field(name='The Random number was :', value=param[0]+param[1]+param[2]+param[3])
+
+    await message_meta.channel.send(content=None, embed=embed_one)

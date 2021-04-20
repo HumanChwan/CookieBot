@@ -189,13 +189,13 @@ def random_between(start: int, end: int) -> int:
 
 def math_cookie(infix_list):
     if not infix_list:
-        return 'Incorrect expression? At least get your shit right man :pensive:'
+        return None
 
     answer = expression_processor(' '.join(infix_list))
 
     if not answer:
-        return 'Incorrect expression? At least get your shit right man :pensive:'
+        return None
 
     answer = round(answer, 4)
 
-    return 'Nice there you go, Your expression yieldeth : ' + '**' + f'{answer}' + '**'
+    return answer
