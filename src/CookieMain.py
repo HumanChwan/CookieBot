@@ -3,192 +3,215 @@ import os
 import discord
 from dotenv import load_dotenv
 import MathCookie
-import CoolGameFunc as cgf
+import CoolGameFunc as CGF
 import Send
+import dataService.data_service as dt_srv
+import data.mongo_setup as mongo_setup
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-RimuruId = os.getenv('RimuruBoi')
+
 
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
+
+
+def mongo_launch():
+    mongo_setup.mongo_init_()
+
 
 @client.event
 async def on_connect():
     print(f'{client.user.name} is ready to launch!')
 
+
 @client.event
 async def on_ready():
-    await client.change_presence(status=discord.Status.invisible)
+    # await client.change_presence(status=discord.Status.invisible)
     print(f'{client.user.name} launched!')
+
 
 @client.event
 async def on_member_join(member):
     await member.create_dm()
     await member.dm_channel.send('yo hello')
 
-# @client.event
-# async def on_guild_join(guild):
+
+@client.event
+async def on_guild_join(guild):
+    # await Send.guild_join_message(guild)
+    dt_srv.create_guild(guild)
 
 PlayersRn = {}
 
 HelpCmd = ['help', 'cmd', 'command', 'commands']
 QuitCmd = ['endgame', 'terminate', 'quit', 'exit', 'end']
-PrefixAcceptable = ['cookie', 'ck']
+prefix_acceptable = ['cookie', 'ck']
 
-RimuruSpamOn = False
+rimuru_spam_on = False
+
 
 @client.event
-async def on_message(messageMETA):
+async def on_message(message_meta):
     global PlayersRn
+    global rimuru_spam_on
 
-    if messageMETA.author.bot:
+    if message_meta.author.bot:
         return
 
-    PrefixInUse = PrefixAcceptable
+    prefix_in_use = prefix_acceptable
 
     # found = False
     # # SPAM MOMENT OREKI
-    # if messageMETA.content == 'spam begin':
-    #     RimuruSpamOn = True
+    #
+    # if message_meta.content == 'spam begin':
+    #     rimuru_spam_on = True
+    #     member_to_spammed = message_meta.author
+    #
     #     for guild in client.guilds:
     #         for member in guild.members:
-    #             if member.id == 446282974942461960:
+    #
+    #             if not found and member.id == 689508374693281935:
+    #                 member_to_spammed = member
     #                 found = True
     #                 break
     #         if found:
     #             break
-    #     await member.create_dm() 
-    #     while RimuruSpamOn:
-    #         print('in')
-    #         await member.dm_channel.send(
+    #
+    #     await member_to_spammed.create_dm()
+    #     while rimuru_spam_on:
+    #         await member_to_spammed.dm_channel.send(
     #             'lol get spammed\n'
     #             + 'lol get spammed\n'
     #             + 'lol get spammed\n'
     #             + 'lol get spammed\n'
     #         )
     #     return
-        
-    # if messageMETA.content == 'stop spam':
-    #     RimuruSpamOn = False
-
+    #
+    # if message_meta.content == 'stop spam':
+    #     rimuru_spam_on = False
+    #
     # return
     
-    if MathCookie.CheckInteger(messageMETA.content, False):
-        if messageMETA.author in PlayersRn:
+    if MathCookie.check_integer(message_meta.content, False):
+        if message_meta.author in PlayersRn:
 
-            if len(messageMETA.content) != 4:
-                await messageMETA.channel.send(f':cookie: **{messageMETA.author.name} |** Wrong Input Style')
+            if len(message_meta.content) != 4:
+                await message_meta.channel.send(f':cookie: **{message_meta.author.name} |** Wrong Input Style')
 
-            elif cgf.RepeatFound(messageMETA.content):
-                await messageMETA.channel.send(f'<@{messageMETA.author.id}> Found Repeated Digits in the entered number :expressionless:')
+            elif CGF.repeat_found(message_meta.content):
+                await message_meta.channel.send(f'<@{message_meta.author.id}> Found Repeated Digits in '
+                                                f'the entered number :expressionless:')
 
             else:
-                PlayersRn[messageMETA.author][1] = messageMETA.content
+                PlayersRn[message_meta.author][1] = message_meta.content
 
-                PartAns = cgf.Checklog(PlayersRn[messageMETA.author][0], PlayersRn[messageMETA.author][1])
+                partial_answer = CGF.check_log(PlayersRn[message_meta.author][0], PlayersRn[message_meta.author][1])
 
-                embed_boi = discord.Embed(title='Guess Results', description='Player : ' + f'<@{messageMETA.author.id}>')
-                PlayersRn[messageMETA.author][2] -= 1
+                embed_boi = discord.Embed(title='Guess Results',
+                                          description='Player : ' + f'<@{message_meta.author.id}>')
+                PlayersRn[message_meta.author][2] -= 1
 
-                embed_boi.add_field(name='Correct Digits :', value=PartAns[0])
-                embed_boi.add_field(name='Correct Places :', value=PartAns[1])
-                embed_boi.add_field(name='Tries Left :', value=PlayersRn[messageMETA.author][2])
+                embed_boi.add_field(name='Correct Digits :', value=partial_answer[0])
+                embed_boi.add_field(name='Correct Places :', value=partial_answer[1])
+                embed_boi.add_field(name='Tries Left :', value=PlayersRn[message_meta.author][2])
 
-                if PartAns[1] == 4:
+                if partial_answer[1] == 4:
                     embed_boi.add_field(name='Guessed the Correct Number Yay :tada: :confetti_ball:', value='_ _')
-                    PlayersRn.pop(messageMETA.author)
+                    PlayersRn.pop(message_meta.author)
 
-                await messageMETA.channel.send(content=None, embed=embed_boi)
+                await message_meta.channel.send(content=None, embed=embed_boi)
 
-                if messageMETA.author in PlayersRn and PlayersRn[messageMETA.author][2] == 0:
+                if message_meta.author in PlayersRn and PlayersRn[message_meta.author][2] == 0:
 
-                    embed_two = discord.Embed(title='Ran Out of tries :disappointed:', description=f'<@{messageMETA.author.id}> Better luck next Time UwU')
-                    embed_two.add_field(name='Random Number was :', value=''.join(PlayersRn[messageMETA.author][0]))
+                    embed_two = discord.Embed(title='Ran Out of tries :disappointed:',
+                                              description=f'<@{message_meta.author.id}> Better luck next Time UwU')
+                    embed_two.add_field(name='Random Number was :', value=''.join(PlayersRn[message_meta.author][0]))
 
-                    PlayersRn.pop(messageMETA.author)
+                    PlayersRn.pop(message_meta.author)
 
-                    await messageMETA.channel.send(content=None, embed=embed_two)
+                    await message_meta.channel.send(content=None, embed=embed_two)
 
-    MessageLst = messageMETA.content.replace('`', '').replace('_', '').replace('|', '').split()
+    message_as_list = message_meta.content.replace('`', '').replace('_', '').replace('|', '').split()
 
-    if not MessageLst:
+    if not message_as_list:
         return
 
-    if MessageLst[0] in PrefixInUse:
-        MessageLst.remove(MessageLst[0])
+    if message_as_list[0] in prefix_in_use:
+        message_as_list.remove(message_as_list[0])
 
-        if not MessageLst:
-            await Send.CookieQuote(messageMETA.channel)
+        if not message_as_list:
+            await Send.cookie_quote(message_meta.channel)
             return
 
-        if MessageLst[0].lower() in HelpCmd:
-            await Send.EmbedHelp(messageMETA.channel)
+        if message_as_list[0].lower() in HelpCmd:
+            await Send.embed_help(message_meta.channel)
 
-        elif MessageLst[0] == 'math':
-            MessageLst.remove('math')
+        elif message_as_list[0] == 'math':
+            message_as_list.remove('math')
 
-            FinalPrint = MathCookie.MathCookie(MessageLst)
+            final_print = MathCookie.math_cookie(message_as_list)
 
-            await messageMETA.channel.send(f'\n :cookie: **{messageMETA.author.name} |** ' + FinalPrint)
+            await message_meta.channel.send(f'\n :cookie: **{message_meta.author.name} |** ' + final_print)
 
-        elif MessageLst[0].lower() == 'coolgame':
-            MessageLst.remove(MessageLst[0])
+        elif message_as_list[0].lower() == 'coolgame':
+            message_as_list.remove(message_as_list[0])
 
-            if not MessageLst or MessageLst[0].lower() in HelpCmd:
-                await Send.EmbedHelpCG(messageMETA.channel)
+            if not message_as_list or message_as_list[0].lower() in HelpCmd:
+                await Send.embed_help_cool_game(message_meta.channel)
 
-            elif MessageLst[0] == 'init':
-                if messageMETA.author in PlayersRn:
-                    await messageMETA.channel.send('Already initiated!! UwU')
+            elif message_as_list[0] == 'init':
+                if message_meta.author in PlayersRn:
+                    await message_meta.channel.send('Already initiated!! UwU')
                     return
 
-                PlayersRn.update({messageMETA.author : [MathCookie.RandomList(), None, 10]})
+                PlayersRn.update({message_meta.author: [MathCookie.random_list(), None, 10]})
 
-                await messageMETA.channel.send(f'<@{messageMETA.author.id}>'  + ' Game has now initiated ')
+                await message_meta.channel.send(f'<@{message_meta.author.id}>' + ' Game has now initiated ')
 
-            elif MessageLst[0].lower() in QuitCmd:
-                if messageMETA.author in PlayersRn:
-                    await Send.GameTerminate(messageMETA)
+            elif message_as_list[0].lower() in QuitCmd:
+                if message_meta.author in PlayersRn:
+                    await Send.game_terminate(message_meta)
 
-                    PlayersRn.pop(messageMETA.author)
-                    return
+                    PlayersRn.pop(message_meta.author)
                 else:
-                    await messageMETA.channel.send(f'<@{messageMETA.author.id}> LOL what do you even wanna terminate, baka ka? :nerd:')
-                    return
+                    await message_meta.channel.send(f'<@{message_meta.author.id}> LOL what do you even wanna terminate,'
+                                                    f' baka ka? :nerd:')
             else:
-                await Send.EmbedHelpCG(messageMETA.channel)
+                await Send.embed_help_cool_game(message_meta.channel)
 
-        elif MessageLst[0].lower() in {'simp', 'simprate', 'gay', 'gayrate'}:
-            Boi = MathCookie.RandomBtwn(0, 100)
-            mention = messageMETA.mentions
-            ToBeMentioned = f'<@{messageMETA.author.id}>'
+        elif message_as_list[0].lower() in {'simp', 'simprate', 'gay', 'gayrate'}:
+            boi = MathCookie.random_between(0, 100)
+            mention = message_meta.mentions
+            to_be_mentioned = f'<@{message_meta.author.id}>'
 
             if mention:
-                ToBeMentioned = f'<@{mention[0].id}>'
+                to_be_mentioned = f'<@{mention[0].id}>'
 
             if not mention:
-                mention = messageMETA.role_mentions
+                mention = message_meta.role_mentions
                 if mention:
-                    ToBeMentioned = f'{mention[0].mention}'
+                    to_be_mentioned = f'{mention[0].mention}'
 
             end = 'gay'
 
-            if MessageLst[0].lower() in {'simp', 'simprate'}:
+            if message_as_list[0].lower() in {'simp', 'simprate'}:
                 end = 'simp'
 
-            await messageMETA.channel.send(f'{ToBeMentioned} is {Boi}% {end}')
+            await message_meta.channel.send(f'{to_be_mentioned} is {boi}% {end}')
 
         else:
-            await Send.CookieQuote(messageMETA.channel)
+            await Send.cookie_quote(message_meta.channel)
 
+    elif message_as_list[0].lower() in QuitCmd:
 
-    elif MessageLst[0].lower() in QuitCmd:
+        if message_meta.author in PlayersRn:
+            await Send.game_terminate(message_meta)
 
-        if messageMETA.author in PlayersRn:
-            await Send.GameTerminate(messageMETA)
-
-            PlayersRn.pop(messageMETA.author)
+            PlayersRn.pop(message_meta.author)
             return
+
+
+mongo_launch()
 
 client.run(TOKEN)

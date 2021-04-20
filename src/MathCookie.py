@@ -1,10 +1,12 @@
 import random
 
-def RandomList():
+
+def random_list():
     first10 = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
     while first10[0] == '0':
         random.shuffle(first10)
     return [first10[i] for i in range(4)]
+
 
 def precedence(operator):
     if operator == '+' or operator == '-':
@@ -21,12 +23,12 @@ def precedence(operator):
         return 0
 
 
-def CheckInteger(num, If_Dot):
+def check_integer(num, if_decimal):
     cnt = 0
     for i in num:
         if i == '.':
             cnt += 1
-            if cnt == If_Dot+1:
+            if cnt == if_decimal+1:
                 return False 
         elif i < '0' or '9' < i:
             return False
@@ -34,25 +36,26 @@ def CheckInteger(num, If_Dot):
     return True
 
 
-def Best(numStr):
-    if numStr[0] == '.':
-        numStr = '0' + numStr
-    elif numStr[-1] == '.':
-        numStr += '0'
+def best(string_as_number):
+    if string_as_number[0] == '.':
+        string_as_number = '0' + string_as_number
+    elif string_as_number[-1] == '.':
+        string_as_number += '0'
 
-    return numStr
+    return string_as_number
 
-def InfixtoPostix(inf):
+
+def infix_to_postfix(inf):
     stack = []
-    PostfixList = []
+    postfix_list = []
     for j in inf:
-        if CheckInteger(j, True):
-            PostfixList.append(Best(j))
+        if check_integer(j, True):
+            postfix_list.append(best(j))
         elif j == '(':
             stack.append('(')
         elif j == ')':
             while stack[-1] != '(' and stack:
-                PostfixList.append(stack[-1])
+                postfix_list.append(stack[-1])
                 try:
                     stack.pop()
                 except IndexError:
@@ -68,7 +71,7 @@ def InfixtoPostix(inf):
                 stack.append(j)
             else:
                 while stack and precedence(j) < precedence(stack[-1]):
-                    PostfixList.append(stack[-1])
+                    postfix_list.append(stack[-1])
                     try:
                         stack.pop()
                     except IndexError:
@@ -76,49 +79,56 @@ def InfixtoPostix(inf):
                 stack.append(j)
         
     while stack:
-        PostfixList.append(stack[-1])
+        postfix_list.append(stack[-1])
         try:
             stack.pop()
         except IndexError:
             return None
-    return PostfixList
+    return postfix_list
 
 
 def addition(a, b):
     return a+b
 
+
 def subtraction(a, b):
     return a-b
+
 
 def multiplication(a, b):
     return a*b
 
+
 def division(a, b):
     return a/b
+
 
 def exponent(a, b):
     return a**b
 
+
 def modulo(a, b):
-    return int(a)%int(b)
+    return int(a) % int(b)
 
 
-def Arth(func, a, b):
+def arithmetic(func, a, b):
     return func(a, b)
 
+
 function_name = {
-    '+' : addition,
-    '-' : subtraction,
-    '*' : multiplication,
-    '/' : division,
-    '^' : exponent,
-    '%' : modulo
+    '+': addition,
+    '-': subtraction,
+    '*': multiplication,
+    '/': division,
+    '^': exponent,
+    '%': modulo
 }
 
-def evaluate(PostfixList):
+
+def evaluate(postfix_list):
     stack = []
-    for j in PostfixList:
-        if CheckInteger(j, True):
+    for j in postfix_list:
+        if check_integer(j, True):
             stack.append(j)
         else:
             try:
@@ -131,65 +141,61 @@ def evaluate(PostfixList):
                 stack.pop()
             except (ValueError, IndexError):
                 return None
-            stack.append(str(Arth(function_name[j], two, one)))
+            stack.append(str(arithmetic(function_name[j], two, one)))
     answer = float(stack[-1])
     return answer
 
 
-def stringToInfixList(inf):
+def string_to_infix_list(inf):
     cache = ''
-    FinalInfixList = []
+    final_infix_list = []
     for c in inf:
         if c == ' ':
             if cache != '':
-                FinalInfixList.append(cache)
+                final_infix_list.append(cache)
                 cache = ''
         elif '0' <= c <= '9' or c == '.':
             cache += c
-        elif c in {'+', '-', '*', '/', '^', '(', ')','%'}:
+        elif c in {'+', '-', '*', '/', '^', '(', ')', '%'}:
             if cache != '':
-                FinalInfixList.append(cache)
+                final_infix_list.append(cache)
                 cache = ''
-            FinalInfixList.append(c)
+            final_infix_list.append(c)
         else:
             return None
     if cache != '':
-        FinalInfixList.append(cache)
-        cache = ''
-    return FinalInfixList
+        final_infix_list.append(cache)
+
+    return final_infix_list
 
 
-def ExpressionProcessor(InfixString):
-    InfixString = InfixString.replace('modulo', '%')
-    InfixString = InfixString.replace('mod', '%')
-    InfixString = InfixString.replace('[', '(')
-    InfixString = InfixString.replace(']', ')')
-    InfixString = InfixString.replace('{', '(')
-    InfixString = InfixString.replace('}', ')')
-    InfixList = stringToInfixList(InfixString)
-    if not InfixList:
+def expression_processor(infix_string):
+    infix_string = infix_string.replace('modulo', '%').replace('mod', '%').replace('[', '(')
+    infix_string = infix_string.replace(']', ')').replace('{', '(').replace('}', ')')
+    infix_list = string_to_infix_list(infix_string)
+    if not infix_list:
         return None
-    PostfixList = InfixtoPostix(InfixList)
+    postfix_list = infix_to_postfix(infix_list)
 
-    if not PostfixList:
+    if not postfix_list:
         return None
 
-    return evaluate(PostfixList)
+    return evaluate(postfix_list)
 
 
-def RandomBtwn(start: int, end: int) -> (int):
+def random_between(start: int, end: int) -> int:
     return random.randint(start, end)
 
 
-def MathCookie(InfixLst):
-    if not InfixLst:
+def math_cookie(infix_list):
+    if not infix_list:
         return 'Incorrect expression? At least get your shit right man :pensive:'
 
-    Answer = ExpressionProcessor(' '.join(InfixLst))
+    answer = expression_processor(' '.join(infix_list))
 
-    if Answer == None:
+    if not answer:
         return 'Incorrect expression? At least get your shit right man :pensive:'
 
-    Answer = round(Answer, 4)
+    answer = round(answer, 4)
 
-    return 'Nice there you go, Your expression yieldeth : ' + '**' + f'{Answer}' + '**'
+    return 'Nice there you go, Your expression yieldeth : ' + '**' + f'{answer}' + '**'
