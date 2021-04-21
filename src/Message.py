@@ -4,10 +4,10 @@ import MathCookie
 import Send
 import dataService.data_service as dt_srv
 import CoolGameFunc as cgf
+from data.guild_show import GuildPretty
 
 HelpCmd = ['help', 'cmd', 'command', 'commands']
 QuitCmd = ['endgame', 'terminate', 'quit', 'exit', 'end']
-prefix_acceptable = ['cookie', 'ck']
 
 
 async def fun_command(message_meta: discord.message, command: str):
@@ -25,7 +25,7 @@ async def fun_command(message_meta: discord.message, command: str):
 
     end = 'gay'
 
-    if command.lower() in {'simp', 'simprate'}:
+    if command in {'simp', 'simprate'}:
         end = 'simp'
 
     await message_meta.channel.send(f'{to_be_mentioned} is {boi}% {end}')
@@ -57,15 +57,15 @@ async def cool_game_io(message_meta: discord.message, command: str):
 
 
 async def cool_game_input_process(message_meta: discord.message):
+    if not dt_srv.player_playing(message_meta.author.guild.id, message_meta.author.id):
+        return
+
     if len(message_meta.content) != 4:
         await Send.wrong_input(message_meta)
         return
 
     if cgf.repeat_found(message_meta.content):
         await Send.repeat_input(message_meta)
-        return
-
-    if not dt_srv.player_playing(message_meta.author.guild.id, message_meta.author.id):
         return
 
     data = dt_srv.get_random(message_meta.author.guild.id, message_meta.author.id)
@@ -81,6 +81,18 @@ async def cool_game_input_process(message_meta: discord.message):
     dt_srv.update_member_cool_game_list(message_meta.author.guild.id, message_meta.author.id, done)
 
 
+def get_stats_guild(guild_id: int) -> GuildPretty:
+    return dt_srv.get_guild_data(guild_id)
+
+
+async def show_stats_guild(guild: discord.guild, channel: discord.channel):
+    await Send.present_guild_data(get_stats_guild(guild.id), guild, channel)
+
+
+def show_stats_member(id, id1, mentions, channel: discord.channel):
+    pass
+
+
 async def message_event_handling(message_meta: discord.message):
 
     if MathCookie.check_integer(message_meta.content, False):
@@ -91,6 +103,8 @@ async def message_event_handling(message_meta: discord.message):
     if not message_as_list:
         return
 
+    prefix_acceptable = dt_srv.find_prefix_by_guild_id(message_meta.guild.id)
+
     if message_as_list[0] in prefix_acceptable:
         message_as_list.remove(message_as_list[0])
 
@@ -98,10 +112,12 @@ async def message_event_handling(message_meta: discord.message):
             await Send.cookie_quote(message_meta.channel)
             return
 
-        if message_as_list[0].lower() in HelpCmd:
+        command = message_as_list[0].lower()
+
+        if command in HelpCmd:
             await Send.embed_help(message_meta.channel)
 
-        elif message_as_list[0].lower() == 'math':
+        elif command == 'math':
             message_as_list.remove(message_as_list[0])
             answer = MathCookie.math_cookie(message_as_list)
             if not answer:
@@ -109,12 +125,29 @@ async def message_event_handling(message_meta: discord.message):
             else:
                 await Send.correct_expression(answer, message_meta)
 
-        elif message_as_list[0].lower() == 'coolgame':
+        elif command == 'coolgame':
             message_as_list.remove(message_as_list[0])
-            await cool_game_io(message_meta, message_as_list[0].lower())
+            await cool_game_io(message_meta, command)
 
-        elif message_as_list[0].lower() in {'simp', 'simprate', 'gay', 'gayrate'}:
-            await fun_command(message_meta, message_as_list[0])
+        elif command in QuitCmd:
+            if turn_off(message_meta.author):
+                await Send.terminate_successful(message_meta)
+
+        elif command in {'simp', 'simprate', 'gay', 'gayrate'}:
+            await fun_command(message_meta, command)
+
+        elif command in {'stats', 'stat', 'server', 'info'}:
+            await show_stats_guild(message_meta.guild, message_meta.channel)
+            #  <---Guild Info----->
+
+        elif command in {'mystats', 'mystat', 'myinfo'}:
+            show_stats_member(message_meta.author.id, message_meta.guild.id,
+                              message_meta.mentions, message_meta.channel)
+            # <----Member Info----->
 
         else:
             await Send.cookie_quote(message_meta.channel)
+
+    elif message_meta.content in QuitCmd:
+        if turn_off(message_meta.author):
+            await Send.terminate_successful(message_meta)

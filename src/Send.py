@@ -1,5 +1,6 @@
 import discord
 import dataService.data_service as dt_srv
+from data.guild_show import GuildPretty
 
 
 def help_cool_game():
@@ -122,3 +123,50 @@ async def ran_out_of_tries(message_meta: discord.message, param):
     embed_one.add_field(name='The Random number was :', value=param[0]+param[1]+param[2]+param[3])
 
     await message_meta.channel.send(content=None, embed=embed_one)
+
+
+async def present_guild_data(guild_data: GuildPretty, guild_discord: discord.guild, channel: discord.channel):
+    embed_boi = discord.Embed(title='Cookie Stats ', description='_ _')
+    # embed ------> guild_discord.name
+    if guild_data.cool_game_data['One'][1]:
+        one = guild_data.cool_game_data['One']
+        member = guild_discord.get_member(one[1])
+        display_name = member.nick
+        if not display_name:
+            display_name = member.name
+        leaderboard = f'**1.** __**{display_name}**__ : **{one[0]}**\n'
+        # embed ----- > guild_discord.get_member(guild_data.cool_game_data['One'][1])
+    else:
+        leaderboard = f'**1.** ------- : ----\n'
+
+    if guild_data.cool_game_data['Two'][1]:
+        two = guild_data.cool_game_data['Two']
+        member = guild_discord.get_member(two[1])
+        display_name = member.nick
+        if not display_name:
+            display_name = member.name
+        leaderboard += f'**2.** __**{display_name}**__ : **{two[0]}**\n'
+        # embed ----- > guild_discord.get_member(guild_data.cool_game_data['One'][1])
+    else:
+        leaderboard += f'**2.** ------- : ----\n'
+        # embed ---- > empty
+
+    if guild_data.cool_game_data['Three'][1]:
+        three = guild_data.cool_game_data['Three']
+        member = guild_discord.get_member(three[1])
+        display_name = member.nick
+        if not display_name:
+            display_name = member.name
+        leaderboard += f'**3.** __**{display_name}**__ : **{three[0]}**\n'
+        # embed ----- > guild_discord.get_member(guild_data.cool_game_data['One'][1])
+    else:
+        leaderboard += f'**3.** ------- : ----\n'
+        # embed ---- > empty
+
+    embed_boi.add_field(name=f'__Leaderboard of {guild_discord.name}__', value=leaderboard, inline=False)
+    # embed ----> guild.discord.member_count
+    embed_boi.add_field(name='Member Count:', value=str(guild_discord.member_count))
+
+    embed_boi.set_footer(text=f'Server id: {guild_discord.id}')
+    # mbed.footer -----> guild_discord.id
+    await channel.send(content=None, embed=embed_boi)

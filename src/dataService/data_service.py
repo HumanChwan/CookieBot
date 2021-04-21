@@ -4,7 +4,7 @@ import MathCookie
 from data.cool_game import CoolGame
 from data.guild import Guild
 from data.member import Member
-
+from data.guild_show import GuildPretty
 
 def create_cool_game() -> CoolGame:
     cool_game_temp = CoolGame()
@@ -113,3 +113,36 @@ def player_playing(guild_id: int, member_id: int) -> bool:
     for member in guild.member_list:
         if member.m_id == member_id:
             return member.cool_game_data.player_in_cool
+
+
+def find_prefix_by_guild_id(guild_id: int):
+    guild = find_guild_by_id(guild_id)
+
+    return guild.prefix_acceptable
+
+
+def get_guild_data(guild_id: int) -> GuildPretty:
+    guild = find_guild_by_id(guild_id)
+    guild_return = GuildPretty()
+    guild_return._id = guild_id
+
+    list_data = []
+    for member in guild.member_list:
+        list_data.append([member.cool_game_data.total_won, member.m_id])
+
+    list_data.sort(key=lambda x: x[0], reverse=True)
+
+    len_list_data = len(list_data)
+
+    if len_list_data > 0:
+        guild_return.cool_game_data['One'] = list_data[0]
+        len_list_data -= 1
+
+    if len_list_data > 0:
+        guild_return.cool_game_data['Two'] = list_data[1]
+        len_list_data -= 1
+
+    if len_list_data > 0:
+        guild_return.cool_game_data['Three'] = list_data[2]
+
+    return guild_return
