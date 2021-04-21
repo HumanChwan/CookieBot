@@ -85,8 +85,8 @@ def get_stats_guild(guild_id: int) -> GuildPretty:
     return dt_srv.get_guild_data(guild_id)
 
 
-async def show_stats_guild(guild: discord.guild, channel: discord.channel):
-    await Send.present_guild_data(get_stats_guild(guild.id), guild, channel)
+async def show_stats_guild(author: discord.member, guild: discord.guild, channel: discord.channel):
+    await Send.present_guild_data(author, get_stats_guild(guild.id), guild, channel)
 
 
 def show_stats_member(id, id1, mentions, channel: discord.channel):
@@ -127,7 +127,7 @@ async def message_event_handling(message_meta: discord.message):
 
         elif command == 'coolgame':
             message_as_list.remove(message_as_list[0])
-            await cool_game_io(message_meta, command)
+            await cool_game_io(message_meta, message_as_list[0].lower())
 
         elif command in QuitCmd:
             if turn_off(message_meta.author):
@@ -136,14 +136,21 @@ async def message_event_handling(message_meta: discord.message):
         elif command in {'simp', 'simprate', 'gay', 'gayrate'}:
             await fun_command(message_meta, command)
 
-        elif command in {'stats', 'stat', 'server', 'info'}:
-            await show_stats_guild(message_meta.guild, message_meta.channel)
+        elif command in {'stats', 'stat', 'server', 'info', 'leaderboard'}:
+            await show_stats_guild(message_meta.author, message_meta.guild, message_meta.channel)
             #  <---Guild Info----->
 
-        elif command in {'mystats', 'mystat', 'myinfo'}:
+        elif command in {'mystats', 'mystat', 'myinfo', 'profile'}:
             show_stats_member(message_meta.author.id, message_meta.guild.id,
                               message_meta.mentions, message_meta.channel)
             # <----Member Info----->
+        elif command in {'pfp', 'dp', 'av', 'avatar'}:
+            mentions = message_meta.mentions
+            if mentions:
+                to_be_presented = mentions[0]
+            else:
+                to_be_presented = message_meta.author
+            await Send.profile_picture(to_be_presented, message_meta.author, message_meta.channel)
 
         else:
             await Send.cookie_quote(message_meta.channel)

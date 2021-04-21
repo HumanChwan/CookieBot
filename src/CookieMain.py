@@ -32,6 +32,8 @@ async def on_ready():
 
 @client.event
 async def on_member_join(member):
+    if member.bot:
+        return
     await member.create_dm()
     await member.dm_channel.send('yo hello')
     dt_srv.add_member_to_guild(member)
@@ -47,7 +49,7 @@ async def on_guild_join(guild):
 async def on_message(message_meta):
     if message_meta.author.bot:
         return
-
+    # await Send.emoji_try(message_meta.channel)
     await Message.message_event_handling(message_meta)
 
 

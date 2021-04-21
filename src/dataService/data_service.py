@@ -6,6 +6,7 @@ from data.guild import Guild
 from data.member import Member
 from data.guild_show import GuildPretty
 
+
 def create_cool_game() -> CoolGame:
     cool_game_temp = CoolGame()
     return cool_game_temp
@@ -30,6 +31,8 @@ def create_guild(guild: discord.guild):
         break
 
     for member_in_guild in guild.members:
+        if member_in_guild.bot:
+            continue
         guild_to_stored.member_list.append(create_member(member_in_guild))
 
     guild_to_stored.save()

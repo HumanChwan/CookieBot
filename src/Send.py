@@ -125,8 +125,12 @@ async def ran_out_of_tries(message_meta: discord.message, param):
     await message_meta.channel.send(content=None, embed=embed_one)
 
 
-async def present_guild_data(guild_data: GuildPretty, guild_discord: discord.guild, channel: discord.channel):
-    embed_boi = discord.Embed(title='Cookie Stats ', description='_ _')
+async def present_guild_data(author: discord.member,
+                             guild_data: GuildPretty, guild_discord: discord.guild, channel: discord.channel):
+    embed_boi = discord.Embed(title=':cookie: **Cookie Stats**', description='_ _')
+    embed_boi.set_thumbnail(url=
+                    'https://github.com/HumanChwan/CookieBot/blob/master/Cookie_Monster-removebg-preview.png?raw=true')
+    embed_boi.set_author(name=author.name, icon_url=author.avatar_url)
     # embed ------> guild_discord.name
     if guild_data.cool_game_data['One'][1]:
         one = guild_data.cool_game_data['One']
@@ -134,10 +138,10 @@ async def present_guild_data(guild_data: GuildPretty, guild_discord: discord.gui
         display_name = member.nick
         if not display_name:
             display_name = member.name
-        leaderboard = f'**1.** __**{display_name}**__ : **{one[0]}**\n'
+        leaderboard = f'**1.** __**{display_name}**__ : **{one[0]}** :first_place:\n'
         # embed ----- > guild_discord.get_member(guild_data.cool_game_data['One'][1])
     else:
-        leaderboard = f'**1.** ------- : ----\n'
+        leaderboard = f'**1.** ------- : ---- :first_place:\n'
 
     if guild_data.cool_game_data['Two'][1]:
         two = guild_data.cool_game_data['Two']
@@ -145,22 +149,19 @@ async def present_guild_data(guild_data: GuildPretty, guild_discord: discord.gui
         display_name = member.nick
         if not display_name:
             display_name = member.name
-        leaderboard += f'**2.** __**{display_name}**__ : **{two[0]}**\n'
+        leaderboard += f'**2.** __**{display_name}**__ : **{two[0]}** :second_place:\n'
         # embed ----- > guild_discord.get_member(guild_data.cool_game_data['One'][1])
     else:
-        leaderboard += f'**2.** ------- : ----\n'
+        leaderboard += f'**2.** ------- : ---- :second_place:\n'
         # embed ---- > empty
 
     if guild_data.cool_game_data['Three'][1]:
         three = guild_data.cool_game_data['Three']
         member = guild_discord.get_member(three[1])
-        display_name = member.nick
-        if not display_name:
-            display_name = member.name
-        leaderboard += f'**3.** __**{display_name}**__ : **{three[0]}**\n'
+        leaderboard += f'**3.** __**{member.display_name}**__ : **{three[0]} :third_place:**\n'
         # embed ----- > guild_discord.get_member(guild_data.cool_game_data['One'][1])
     else:
-        leaderboard += f'**3.** ------- : ----\n'
+        leaderboard += f'**3.** ------- : ---- :third_place:\n'
         # embed ---- > empty
 
     embed_boi.add_field(name=f'__Leaderboard of {guild_discord.name}__', value=leaderboard, inline=False)
@@ -170,3 +171,15 @@ async def present_guild_data(guild_data: GuildPretty, guild_discord: discord.gui
     embed_boi.set_footer(text=f'Server id: {guild_discord.id}')
     # mbed.footer -----> guild_discord.id
     await channel.send(content=None, embed=embed_boi)
+
+
+async def emoji_try(channel: discord.channel):
+    await channel.send('emote \:shrug:')
+
+
+async def profile_picture(to_be_presented: discord.member, author: discord.member, channel: discord.channel):
+    embed_make = discord.Embed(title=f'Avatar : {to_be_presented.display_name}', description='_ _')
+    embed_make.set_author(name=author.name, icon_url=author.avatar_url)
+    embed_make.set_image(url=to_be_presented.avatar_url)
+
+    await channel.send(content=None, embed=embed_make)
