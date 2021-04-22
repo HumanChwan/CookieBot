@@ -316,7 +316,7 @@ def kick(self: bool, victim: str, bad_boi: int):
 
 def punch(self: bool, victim: str, bad_boi: int):
     if self:
-        message_displayed = ':( why slap yourself man, are you sad? (P.S. : You still gonna be slapped :smile:)'
+        message_displayed = ':( why slap yourself man, are you sad? (P.S. : You still gonna be punched :smile:)'
     else:
         message_displayed = f'kuso gaki {victim} got punched by {bad_boi}-kun!!'
     ind = random_between(0, len(punch_list) - 1)

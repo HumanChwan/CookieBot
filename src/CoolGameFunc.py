@@ -12,8 +12,8 @@ def check_log(a, b):
 def repeat_found(input_string):
     bool_digit = [False] * 10
     for i in input_string:
-        if bool_digit[int(i)-int('0')]:
+        if bool_digit[int(i)]:
             return True
         else:
-            bool_digit[int(i)-int('0')] = True
+            bool_digit[int(i)] = True
     return False
