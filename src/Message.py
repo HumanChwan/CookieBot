@@ -5,9 +5,11 @@ import Send
 import dataService.data_service as dt_srv
 import CoolGameFunc as cgf
 from data.guild_show import GuildPretty
+from data.member_show import MemberPretty
 
-HelpCmd = ['help', 'cmd', 'command', 'commands']
-QuitCmd = ['endgame', 'terminate', 'quit', 'exit', 'end']
+HelpCmd = ('help', 'cmd', 'command', 'commands')
+QuitCmd = ('endgame', 'terminate', 'quit', 'exit', 'end')
+perform_action = ('slap', 'kick', 'spank', 'kill', 'punch', 'lewd', 'kiss')
 
 
 async def fun_command(message_meta: discord.message, command: str):
@@ -89,8 +91,17 @@ async def show_stats_guild(author: discord.member, guild: discord.guild, channel
     await Send.present_guild_data(author, get_stats_guild(guild.id), guild, channel)
 
 
-def show_stats_member(id, id1, mentions, channel: discord.channel):
-    pass
+def get_stats_member(m_id: int, guild_id: int) -> MemberPretty:
+    return dt_srv.get_member_data(m_id, guild_id)
+
+
+async def show_stats_member(author: discord.member, mentions: discord.mentions, channel: discord.channel):
+    if not mentions:
+        mention = author
+    else:
+        mention = mentions[0]
+    await Send.present_member_data(author, mention.name, get_stats_member(mention.id, mention.guild.id),
+                                   mention.joined_at, channel)
 
 
 async def message_event_handling(message_meta: discord.message):
@@ -141,7 +152,7 @@ async def message_event_handling(message_meta: discord.message):
             #  <---Guild Info----->
 
         elif command in {'mystats', 'mystat', 'myinfo', 'profile'}:
-            show_stats_member(message_meta.author.id, message_meta.guild.id,
+            await show_stats_member(message_meta.author,
                               message_meta.mentions, message_meta.channel)
             # <----Member Info----->
         elif command in {'pfp', 'dp', 'av', 'avatar'}:
@@ -151,6 +162,9 @@ async def message_event_handling(message_meta: discord.message):
             else:
                 to_be_presented = message_meta.author
             await Send.profile_picture(to_be_presented, message_meta.author, message_meta.channel)
+
+        elif command in perform_action:
+            await Send.perform_action_embed(message_meta.author, message_meta.mentions, message_meta.channel, command)
 
         else:
             await Send.cookie_quote(message_meta.channel)

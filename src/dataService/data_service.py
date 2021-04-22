@@ -5,7 +5,8 @@ from data.cool_game import CoolGame
 from data.guild import Guild
 from data.member import Member
 from data.guild_show import GuildPretty
-
+from data.member_show import MemberPretty
+from functools import cmp_to_key
 
 def create_cool_game() -> CoolGame:
     cool_game_temp = CoolGame()
@@ -49,7 +50,6 @@ def find_welcome_channel_id(id_to_be_searched: int) -> int:
 def add_member_to_guild(member: discord.member):
     guild = find_guild_by_id(member.guild.id)
     guild.member_list.append(create_member(member))
-
     guild.save()
 
 
@@ -94,6 +94,20 @@ def get_random(guild_id: int, member_id: int):
             return [member.cool_game_data.temp_random, member.cool_game_data.tries]
 
 
+def compare(mem1: Member, mem2: Member):
+    if mem1.cool_game_data.total_won > mem2.cool_game_data.total_won:
+        return 1
+    elif mem1.cool_game_data.total_won < mem2.cool_game_data.total_won:
+        return -1
+    else:
+        if mem1.cool_game_data.total_played < mem2.cool_game_data.total_played:
+            return 1
+        elif mem1.cool_game_data.total_played > mem2.cool_game_data.total_played:
+            return -1
+        else:
+            return 0
+
+
 def update_member_cool_game_list(guild_id: int, member_id: int, completed: bool):
     guild = find_guild_by_id(guild_id)
 
@@ -107,6 +121,7 @@ def update_member_cool_game_list(guild_id: int, member_id: int, completed: bool)
                     member.cool_game_data.total_won += 1
             break
 
+    guild.member_list = sorted(guild.member_list, key=cmp_to_key(compare), reverse=True)
     guild.save()
 
 
@@ -129,11 +144,9 @@ def get_guild_data(guild_id: int) -> GuildPretty:
     guild_return = GuildPretty()
     guild_return._id = guild_id
 
-    list_data = []
-    for member in guild.member_list:
-        list_data.append([member.cool_game_data.total_won, member.m_id])
+    list_data = [[x.cool_game_data.total_won, x.m_id] for x in guild.member_list]
 
-    list_data.sort(key=lambda x: x[0], reverse=True)
+    # list_data.sort(key=lambda x: x[0], reverse=True)
 
     len_list_data = len(list_data)
 
@@ -149,3 +162,20 @@ def get_guild_data(guild_id: int) -> GuildPretty:
         guild_return.cool_game_data['Three'] = list_data[2]
 
     return guild_return
+
+
+def get_member_data(m_id: int, guild_id: int) -> MemberPretty:
+    guild = find_guild_by_id(guild_id)
+    member_return = MemberPretty()
+    i = 1
+    member = None
+    for member in guild.member_list:
+        if member.m_id == m_id:
+            break
+        i += 1
+    if member:
+        member_return.total_won = member.cool_game_data.total_won
+        member_return.total_played = member.cool_game_data.total_played
+        member_return.rank = i
+
+    return member_return
