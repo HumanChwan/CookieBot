@@ -5,7 +5,8 @@ import discord
 import dataService.data_service as dt_srv
 from data.guild_show import GuildPretty
 from data.member_show import MemberPretty
-from MathCookie import  random_between
+from MathCookie import random_between
+from data.emoji import Emoji
 
 month_finder = (
     'January',
@@ -248,8 +249,14 @@ async def present_guild_data(author: discord.member,
     await channel.send(content=None, embed=embed_boi)
 
 
-async def emoji_try(channel: discord.channel):
-    await channel.send('emote :shrug:')
+async def emoji_try(content, emojis, channel: discord.channel):
+    for emote in emojis:
+        if content == ':' + emote.name + ':':
+            if emote.animated:
+                await channel.send(f'<a:{emote.name}:{emote.id}>')
+            else:
+                await channel.send(f'<:{emote.name}:{emote.id}>')
+            break
 
 
 async def profile_picture(to_be_presented: discord.member, author: discord.member, channel: discord.channel):
@@ -400,3 +407,33 @@ async def perform_action_embed(author: discord.member, mentions, channel: discor
     embed_boi.set_image(url=get_data[1])
 
     await channel.send(content=None, embed=embed_boi)
+
+
+def animated(if_ani: bool) -> str:
+    if if_ani:
+        return 'a'
+    else:
+        return ''
+
+
+async def try_formatted_interpreter(content: str, channel: discord.channel, display_name: str):
+    list_content = content.split()
+
+    found = False
+
+    for i in range(len(list_content)):
+        if list_content[i][0] == list_content[i][-1] == ':':
+            emote = dt_srv.get_emote(list_content[i].replace(':', ''), channel.guild.id)
+            if not emote:
+                continue
+            found = True
+            list_content[i] = f'<{animated(emote.animated)}:{emote.name}:{emote._id}>'
+
+    if found:
+        await channel.send(' '.join(list_content))
+
+
+async def emoji_cheat_sheet(channel: discord.channel, author: discord.member):
+    embed_emote = discord.Embed(title='Emojis', description='_ _')
+    embed_emote.set_author(name=author.name, icon_url=author.avatar_url)
+

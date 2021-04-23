@@ -105,7 +105,6 @@ async def show_stats_member(author: discord.member, mentions: discord.mentions, 
 
 
 async def message_event_handling(message_meta: discord.message):
-
     if MathCookie.check_integer(message_meta.content, False):
         await cool_game_input_process(message_meta)
 
@@ -115,6 +114,8 @@ async def message_event_handling(message_meta: discord.message):
         return
 
     prefix_acceptable = dt_srv.find_prefix_by_guild_id(message_meta.guild.id)
+
+    await Send.try_formatted_interpreter(message_meta.content, message_meta.channel, message_meta.author.display_name)
 
     if message_as_list[0] in prefix_acceptable:
         message_as_list.remove(message_as_list[0])
@@ -172,3 +173,4 @@ async def message_event_handling(message_meta: discord.message):
     elif message_meta.content in QuitCmd:
         if turn_off(message_meta.author):
             await Send.terminate_successful(message_meta)
+

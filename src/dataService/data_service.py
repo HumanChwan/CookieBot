@@ -7,6 +7,8 @@ from data.member import Member
 from data.guild_show import GuildPretty
 from data.member_show import MemberPretty
 from functools import cmp_to_key
+from data.emoji import Emoji
+
 
 def create_cool_game() -> CoolGame:
     cool_game_temp = CoolGame()
@@ -41,6 +43,25 @@ def create_guild(guild: discord.guild):
 
 def find_guild_by_id(guild_id: int) -> Guild:
     return Guild.objects(_id=guild_id).first()
+
+
+def update_emote_exist(name: str, e_id: int, g_id: int, animated: bool):
+    emote = Emoji.objects(_id=e_id).first()
+
+    if not emote:
+        emote = Emoji()
+
+        emote.name = name
+        emote._id = e_id
+        emote.guild_id = g_id
+        emote.animated = animated
+
+        emote.save()
+        return
+
+    if emote.name != name:
+        emote.name = name
+        emote.save()
 
 
 def find_welcome_channel_id(id_to_be_searched: int) -> int:
@@ -179,3 +200,28 @@ def get_member_data(m_id: int, guild_id: int) -> MemberPretty:
         member_return.rank = i
 
     return member_return
+
+
+def emote_setup(emojis):
+    for d_emote in emojis:
+        emote = Emoji()
+
+        emote.name = d_emote.name
+        emote._id = d_emote.id
+        emote.guild_id = d_emote.guild.id
+        emote.animated = d_emote.animated
+
+        emote.save()
+
+
+def get_emote(name: str, g_id: int):
+    emote_list = Emoji.objects(name=name)
+
+    if not emote_list:
+        return None
+    emote = emote_list[0]
+    for emote in emote_list:
+        if emote.guild_id == g_id:
+            return emote
+
+    return emote

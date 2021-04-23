@@ -43,13 +43,20 @@ async def on_member_join(member):
 async def on_guild_join(guild):
     dt_srv.create_guild(guild)
     await Send.guild_join_message(guild)
+    dt_srv.emote_setup(guild.emojis)
+
+
+@client.event
+async def on_guild_emojis_update(guild: discord.guild, before, after):
+    for emote in after:
+        dt_srv.update_emote_exist(emote.name, emote.id, guild.id, emote.animated)
 
 
 @client.event
 async def on_message(message_meta):
     if message_meta.author.bot:
         return
-    # await Send.emoji_try(message_meta.channel)
+
     await Message.message_event_handling(message_meta)
 
 
