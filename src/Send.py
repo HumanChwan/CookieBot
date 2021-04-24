@@ -433,7 +433,59 @@ async def try_formatted_interpreter(content: str, channel: discord.channel, disp
         await channel.send(' '.join(list_content))
 
 
-async def emoji_cheat_sheet(channel: discord.channel, author: discord.member):
-    embed_emote = discord.Embed(title='Emojis', description='_ _')
-    embed_emote.set_author(name=author.name, icon_url=author.avatar_url)
+def obtain_pg_number(footer: str):
+    footer = footer.replace('Page ', '')
+    pg = ''
+    for i in footer:
+        if i == '/':
+            break
+        pg += i
 
+    return int(pg)
+
+
+async def emoji_cheat_sheet(author, page_change: int, message_meta: discord.message):
+    total_pages = (dt_srv.cnt_emote() + 9)//10
+
+    if total_pages == 0:
+        total_pages = 1
+
+    if page_change == 0:
+        page_number = 1
+    else:
+        page_number = obtain_pg_number(message_meta.embeds[0].footer.text)
+        page_number += page_change
+        if page_number < 1 or page_number > total_pages:
+            return
+
+    if page_change == 0:
+        embed_emote = discord.Embed(title='Emojis', description='_ _')
+        embed_emote.set_author(name=author.name, icon_url=author.avatar_url)
+        embed_emote.set_footer(text=f'Page {page_number}/{total_pages}')
+        embed_emote.set_thumbnail(url=
+                                'https://github.com/HumanChwan/CookieBot/blob/master/Cookie_Monster.png?raw=true')
+
+        emotes = dt_srv.get_emotes(0, 10)
+        ind = 1
+        for emote in emotes:
+            embed_emote.add_field(name=f'#{ind}. <{animated(emote.animated)}:{emote.name}:{emote._id}>',
+                                  value=f'__:{emote.name}:__ | ID : {emote._id}', inline=False)
+            ind += 1
+
+        await message_meta.channel.send(content=None, embed=embed_emote)
+        message = await message_meta.channel.fetch_message(id=message_meta.channel.last_message_id)
+        await message.add_reaction(emoji='⬅')
+        await message.add_reaction(emoji='➡')
+    else:
+        embed_emote = message_meta.embeds[0]
+        embed_emote.clear_fields()
+        embed_emote.set_footer(text=f'Page {page_number}/{total_pages}')
+        emotes = dt_srv.get_emotes((page_number - 1) * 10, page_number * 10)
+        ind = (page_number - 1) * 10 + 1
+        for emote in emotes:
+            # __:{emote.name}:__ ({emote._id}) :
+            embed_emote.add_field(name=f'{ind}. <{animated(emote.animated)}:{emote.name}:{emote._id}>',
+                                  value=f'__:{emote.name}:__ | ID : {emote._id}', inline=False)
+            ind += 1
+
+        await message_meta.edit(content=None, embed=embed_emote)

@@ -12,25 +12,25 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 
 
 intents = discord.Intents.all()
-client = discord.Client(intents=intents)
+cookie_bot = discord.Client(intents=intents)
 
 
 def mongo_launch():
     mongo_setup.mongo_init_()
 
 
-@client.event
+@cookie_bot.event
 async def on_connect():
-    print(f'{client.user.name} is ready to launch!')
+    print(f'{cookie_bot.user.name} is ready to launch!')
 
 
-@client.event
+@cookie_bot.event
 async def on_ready():
-    # await client.change_presence(status=discord.Status.invisible)
-    print(f'{client.user.name} launched!')
+    # await cookie_bot.change_presence(status=discord.Status.invisible)
+    print(f'{cookie_bot.user.name} launched!')
 
 
-@client.event
+@cookie_bot.event
 async def on_member_join(member):
     if member.bot:
         return
@@ -39,20 +39,20 @@ async def on_member_join(member):
     dt_srv.add_member_to_guild(member)
 
 
-@client.event
+@cookie_bot.event
 async def on_guild_join(guild):
     dt_srv.create_guild(guild)
     await Send.guild_join_message(guild)
     dt_srv.emote_setup(guild.emojis)
 
 
-@client.event
+@cookie_bot.event
 async def on_guild_emojis_update(guild: discord.guild, before, after):
     for emote in after:
         dt_srv.update_emote_exist(emote.name, emote.id, guild.id, emote.animated)
 
 
-@client.event
+@cookie_bot.event
 async def on_message(message_meta):
     if message_meta.author.bot:
         return
@@ -60,6 +60,22 @@ async def on_message(message_meta):
     await Message.message_event_handling(message_meta)
 
 
+@cookie_bot.event
+async def on_reaction_add(reaction, user):
+    if user.bot:
+        return
+    if cookie_bot.user.id == reaction.message.author.id:
+        await Message.reaction_event_handling(reaction)
+
+
+@cookie_bot.event
+async def on_reaction_remove(reaction, user):
+    if user.bot:
+        return
+    if cookie_bot.user.id == reaction.message.author.id:
+        await Message.reaction_event_handling(reaction)
+
+
 mongo_launch()
 
-client.run(TOKEN)
+cookie_bot.run(TOKEN)

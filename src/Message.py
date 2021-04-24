@@ -145,18 +145,18 @@ async def message_event_handling(message_meta: discord.message):
             if turn_off(message_meta.author):
                 await Send.terminate_successful(message_meta)
 
-        elif command in {'simp', 'simprate', 'gay', 'gayrate'}:
+        elif command in ('simp', 'simprate', 'gay', 'gayrate'):
             await fun_command(message_meta, command)
 
-        elif command in {'stats', 'stat', 'server', 'info', 'leaderboard'}:
+        elif command in ('stats', 'stat', 'server', 'info', 'leaderboard'):
             await show_stats_guild(message_meta.author, message_meta.guild, message_meta.channel)
             #  <---Guild Info----->
 
-        elif command in {'mystats', 'mystat', 'myinfo', 'profile'}:
+        elif command in ('mystats', 'mystat', 'myinfo', 'profile'):
             await show_stats_member(message_meta.author,
                               message_meta.mentions, message_meta.channel)
             # <----Member Info----->
-        elif command in {'pfp', 'dp', 'av', 'avatar'}:
+        elif command in ('pfp', 'dp', 'av', 'avatar'):
             mentions = message_meta.mentions
             if mentions:
                 to_be_presented = mentions[0]
@@ -167,6 +167,9 @@ async def message_event_handling(message_meta: discord.message):
         elif command in perform_action:
             await Send.perform_action_embed(message_meta.author, message_meta.mentions, message_meta.channel, command)
 
+        elif command in ('emojis', 'emotes') or ' '.join(message_as_list).lower() in ('emoji list', 'emote list'):
+            await Send.emoji_cheat_sheet(message_meta.author, 0, message_meta)
+
         else:
             await Send.cookie_quote(message_meta.channel)
 
@@ -174,3 +177,9 @@ async def message_event_handling(message_meta: discord.message):
         if turn_off(message_meta.author):
             await Send.terminate_successful(message_meta)
 
+
+async def reaction_event_handling(reaction):
+    if reaction.emoji == '➡':
+        await Send.emoji_cheat_sheet(None, 1, reaction.message)
+    elif reaction.emoji == '⬅':
+        await Send.emoji_cheat_sheet(None, -1, reaction.message)

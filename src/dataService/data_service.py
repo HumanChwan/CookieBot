@@ -225,3 +225,16 @@ def get_emote(name: str, g_id: int):
             return emote
 
     return emote
+
+
+def cnt_emote():
+    return Emoji.objects.count()
+
+
+def get_emotes(start: int, end: int):
+    if start == 0:
+        return Emoji.objects[:end]
+    emotes = Emoji.objects[start:end]
+    if emotes is None:
+        emotes = Emoji.objects[start:]
+    return emotes
