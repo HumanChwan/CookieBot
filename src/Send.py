@@ -417,20 +417,22 @@ def animated(if_ani: bool) -> str:
 
 
 async def try_formatted_interpreter(content: str, channel: discord.channel, display_name: str):
-    list_content = content.split()
+    line_content = content.split('\n')
 
     found = False
-
-    for i in range(len(list_content)):
-        if list_content[i][0] == list_content[i][-1] == ':':
-            emote = dt_srv.get_emote(list_content[i].replace(':', ''), channel.guild.id)
-            if not emote:
-                continue
-            found = True
-            list_content[i] = f'<{animated(emote.animated)}:{emote.name}:{emote._id}>'
-
+    send_string = ''
+    for string in line_content:
+        list_content = string.split()
+        for i in range(len(list_content)):
+            if list_content[i][0] == list_content[i][-1] == ':':
+                emote = dt_srv.get_emote(list_content[i].replace(':', ''), channel.guild.id)
+                if not emote:
+                    continue
+                found = True
+                list_content[i] = f'<{animated(emote.animated)}:{emote.name}:{emote._id}>'
+        send_string += ' '.join(list_content) + '\n'
     if found:
-        await channel.send(' '.join(list_content))
+        await channel.send(send_string)
 
 
 def obtain_pg_number(footer: str):
@@ -446,7 +448,6 @@ def obtain_pg_number(footer: str):
 
 async def emoji_cheat_sheet(author, page_change: int, message_meta: discord.message):
     total_pages = (dt_srv.cnt_emote() + 9)//10
-
     if total_pages == 0:
         total_pages = 1
 
@@ -471,7 +472,6 @@ async def emoji_cheat_sheet(author, page_change: int, message_meta: discord.mess
             embed_emote.add_field(name=f'#{ind}. <{animated(emote.animated)}:{emote.name}:{emote._id}>',
                                   value=f'__:{emote.name}:__ | ID : {emote._id}', inline=False)
             ind += 1
-
         await message_meta.channel.send(content=None, embed=embed_emote)
         message = await message_meta.channel.fetch_message(id=message_meta.channel.last_message_id)
         await message.add_reaction(emoji='⬅')
@@ -489,3 +489,19 @@ async def emoji_cheat_sheet(author, page_change: int, message_meta: discord.mess
             ind += 1
 
         await message_meta.edit(content=None, embed=embed_emote)
+
+
+async def uwu(channel: discord.channel):
+    await channel.send('⢐⢕⢕⢕⢕⢕⣕⢕⢕⠕⠁⢕⢕⢕⢕⢕⢕⢕⢕⠅⡄⢕⢕⢕⢕⢕⢕⢕⢕⢕\n' +
+                    '⢕⢕⢕⢕⢕⠅⢗⢕⠕⣠⠄⣗⢕⢕⠕⢕⢕⢕⠕⢠⣿⠐⢕⢕⢕⠑⢕⢕⠵⢕\n' +
+                    '⢕⢕⢕⢕⠁⢜⠕⢁⣴⣿⡇⢓⢕⢵⢐⢕⢕⠕⢁⣾⢿⣧⠑⢕⢕⠄⢑⢕⠅⢕\n' +
+                    '⢕⢕⠵⢁⠔⢁⣤⣤⣶⣶⣶⡐⣕⢽⠐⢕⠕⣡⣾⣶⣶⣶⣤⡁⢓⢕⠄⢑⢅⢑\n' +
+                    '⠍⣧⠄⣶⣾⣿⣿⣿⣿⣿⣿⣷⣔⢕⢄⢡⣾⣿⣿⣿⣿⣿⣿⣿⣦⡑⢕⢤⠱⢐\n' +
+                    '⢠⢕⠅⣾⣿⠋⢿⣿⣿⣿⠉⣿⣿⣷⣦⣶⣽⣿⣿⠈⣿⣿⣿⣿⠏⢹⣷⣷⡅⢐\n' +
+                    '⣔⢕⢥⢻⣿⡀⠈⠛⠛⠁⢠⣿⣿⣿⣿⣿⣿⣿⣿⡀⠈⠛⠛⠁⠄⣼⣿⣿⡇⢔\n' +
+                    '⢕⢕⢽⢸⢟⢟⢖⢖⢤⣶⡟⢻⣿⡿⠻⣿⣿⡟⢀⣿⣦⢤⢤⢔⢞⢿⢿⣿⠁⢕\n' +
+                    '⢕⢕⠅⣐⢕⢕⢕⢕⢕⣿⣿⡄⠛⢀⣦⠈⠛⢁⣼⣿⢗⢕⢕⢕⢕⢕⢕⡏⣘⢕\n' +
+                    '⢕⢕⠅⢓⣕⣕⣕⣕⣵⣿⣿⣿⣾⣿⣿⣿⣿⣿⣿⣿⣷⣕⢕⢕⢕⢕⡵⢀⢕⢕\n' +
+                    '⢑⢕⠃⡈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢃⢕⢕⢕\n' +
+                    '⣆⢕⠄⢱⣄⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⢁⢕⢕⠕⢁\n' +
+                    '⣿⣦⡀⣿⣿⣷⣶⣬⣍⣛⣛⣛⡛⠿⠿⠿⠛⠛⢛⣛⣉⣭⣤⣂⢜⠕⢑⣡⣴⣿')

@@ -117,6 +117,9 @@ async def message_event_handling(message_meta: discord.message):
 
     await Send.try_formatted_interpreter(message_meta.content, message_meta.channel, message_meta.author.display_name)
 
+    if message_meta.content.lower() in ('uwu', 'owo'):
+        await Send.uwu(message_meta.channel)
+
     if message_as_list[0] in prefix_acceptable:
         message_as_list.remove(message_as_list[0])
 
