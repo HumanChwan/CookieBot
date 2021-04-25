@@ -50,13 +50,15 @@ async def on_guild_join(guild):
 async def on_guild_emojis_update(guild: discord.guild, before, after):
     for emote in after:
         dt_srv.update_emote_exist(emote.name, emote.id, guild.id, emote.animated)
+    for emote in set(before)-set(after):
+        dt_srv.remove_emoji(emote.id)
+
 
 
 @cookie_bot.event
 async def on_message(message_meta):
     if message_meta.author.bot:
         return
-
     await Message.message_event_handling(message_meta)
 
 

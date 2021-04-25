@@ -170,8 +170,17 @@ async def message_event_handling(message_meta: discord.message):
         elif command in perform_action:
             await Send.perform_action_embed(message_meta.author, message_meta.mentions, message_meta.channel, command)
 
-        elif command in ('emojis', 'emotes') or ' '.join(message_as_list).lower() in ('emoji list', 'emote list'):
+        elif command in ('emojis', 'emotes'):
+            # message_as_list.remove(message_as_list[0])
+            # if not message_as_list:               
             await Send.emoji_cheat_sheet(message_meta.author, 0, message_meta)
+            # elif message_as_list[0] == '-a':
+            #     message_as_list.remove(message_as_list[0])
+            #     if not message_as_list:
+            #         await Send.emoji_cheat_sheet(message_meta.author, 0, message_meta, None)
+            #     elif message_as_list[0].lower() in ('false', '0', 'no', 'f', 'n'):
+            #         await Send.emoji_cheat_sheet(message_meta.author, 0, message_meta, False)
+                
 
         else:
             await Send.cookie_quote(message_meta.channel)

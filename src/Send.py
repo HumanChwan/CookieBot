@@ -161,7 +161,7 @@ async def parallel_init_error(message_meta: discord.message):
 async def init_successful(message_meta: discord.message):
     embed_one = discord.Embed(title='Game has Initialised', description=f'Player: <@{message_meta.author.id}>')
     embed_one.add_field(name='Tries : ', value='10', inline=False)
-    embed_one.set_image(url='https://static.toiimg.com/photo/72975551.cms')
+    embed_one.set_image(url='https://github.com/HumanChwan/CookieBot/blob/master/Cool_Game.png?raw=true')
 
     await message_meta.channel.send(content=None, embed=embed_one)
 
@@ -469,11 +469,11 @@ async def emoji_cheat_sheet(author, page_change: int, message_meta: discord.mess
         emotes = dt_srv.get_emotes(0, 10)
         ind = 1
         for emote in emotes:
-            embed_emote.add_field(name=f'#{ind}. <{animated(emote.animated)}:{emote.name}:{emote._id}>',
-                                  value=f'__:{emote.name}:__ | ID : {emote._id}', inline=False)
+            embed_emote.add_field(name=f'**{ind}.** <{animated(emote.animated)}:{emote.name}:{emote._id}>',
+                                  value=f'**:{emote.name}:** | ID : {emote._id}', inline=False)
             ind += 1
-        await message_meta.channel.send(content=None, embed=embed_emote)
-        message = await message_meta.channel.fetch_message(id=message_meta.channel.last_message_id)
+        message = await message_meta.channel.send(content=None, embed=embed_emote)
+        # message = await message_meta.channel.fetch_message(id=message_meta.channel.last_message_id)
         await message.add_reaction(emoji='⬅')
         await message.add_reaction(emoji='➡')
     else:
@@ -484,8 +484,8 @@ async def emoji_cheat_sheet(author, page_change: int, message_meta: discord.mess
         ind = (page_number - 1) * 10 + 1
         for emote in emotes:
             # __:{emote.name}:__ ({emote._id}) :
-            embed_emote.add_field(name=f'{ind}. <{animated(emote.animated)}:{emote.name}:{emote._id}>',
-                                  value=f'__:{emote.name}:__ | ID : {emote._id}', inline=False)
+            embed_emote.add_field(name=f'**{ind}.** <{animated(emote.animated)}:{emote.name}:{emote._id}>',
+                                  value=f'**:{emote.name}:** | ID : {emote._id}', inline=False)
             ind += 1
 
         await message_meta.edit(content=None, embed=embed_emote)

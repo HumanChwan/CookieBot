@@ -64,6 +64,10 @@ def update_emote_exist(name: str, e_id: int, g_id: int, animated: bool):
         emote.save()
 
 
+def remove_emoji(e_id: int):
+    Emoji.objects(_id=e_id).delete()
+
+
 def find_welcome_channel_id(id_to_be_searched: int) -> int:
     return find_guild_by_id(id_to_be_searched).welcome_channel_id
 
