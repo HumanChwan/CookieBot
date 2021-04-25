@@ -167,7 +167,7 @@ async def init_successful(message_meta: discord.message):
 
 
 async def empty_terminate_error(message_meta: discord.message):
-    await message_meta.channel(f':cookie: **{message_meta.author.name} |**' +
+    await message_meta.channel.send(f':cookie: **{message_meta.author.name} |**' +
                                ' Lol! what do you wanna terminate? _B A K A_ :nerd:')
 
 
