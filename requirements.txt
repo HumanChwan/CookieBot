@@ -1,6 +1,4 @@
 discord.py
 mongoengine
-random
-functools
 dotenv
 os
