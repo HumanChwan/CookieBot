@@ -1,1 +1,1 @@
-worker: python src/CookieMain.py
+worker: python3 src/CookieMain.py
