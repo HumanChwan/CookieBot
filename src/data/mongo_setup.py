@@ -1,8 +1,8 @@
 import mongoengine
 import os
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 
-load_dotenv()
+#load_dotenv()
 srv_uri = os.getenv('MONGODB_SRV')
 
 

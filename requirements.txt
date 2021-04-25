@@ -1,2 +1,3 @@
 discord.py
-mongoengine[srv]
+mongoengine
+pymongo[srv]
