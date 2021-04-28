@@ -477,7 +477,6 @@ async def emoji_cheat_sheet(author, page_change: int, message_meta: discord.mess
         # message = await message_meta.channel.fetch_message(id=message_meta.channel.last_message_id)
         emote_1 = asyncio.create_task(message.add_reaction(emoji='⬅'))
         emote_2 = asyncio.create_task(message.add_reaction(emoji='➡'))
-        print('try')
         await emote_1
         await emote_2
     else:
