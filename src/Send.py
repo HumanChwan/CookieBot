@@ -6,6 +6,7 @@ import dataService.data_service as dt_srv
 from data.guild_show import GuildPretty
 from data.member_show import MemberPretty
 from MathCookie import random_between
+import asyncio
 from data.emoji import Emoji
 
 month_finder = (
@@ -474,8 +475,11 @@ async def emoji_cheat_sheet(author, page_change: int, message_meta: discord.mess
             ind += 1
         message = await message_meta.channel.send(content=None, embed=embed_emote)
         # message = await message_meta.channel.fetch_message(id=message_meta.channel.last_message_id)
-        await message.add_reaction(emoji='⬅')
-        await message.add_reaction(emoji='➡')
+        emote_1 = asyncio.create_task(message.add_reaction(emoji='⬅'))
+        emote_2 = asyncio.create_task(message.add_reaction(emoji='➡'))
+        print('try')
+        await emote_1
+        await emote_2
     else:
         embed_emote = message_meta.embeds[0]
         embed_emote.clear_fields()
