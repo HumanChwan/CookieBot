@@ -121,8 +121,10 @@ async def embed_help_cool_game(channel):
 
 
 async def cookie_quote(channel):
-    await channel.send('**Dood cookie? cookie what?** Now take this, idc')
-    await channel.send(':cookie:')
+    one = asyncio.create_task(channel.send('**Dood cookie? cookie what?** Now take this, idc'))
+    two = asyncio.create_task(channel.send(':cookie:'))
+    await one
+    await two
 
 
 async def game_terminate(message_meta):
