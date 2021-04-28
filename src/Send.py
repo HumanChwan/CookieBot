@@ -2,6 +2,7 @@ import datetime
 from typing import List
 
 import discord
+import asyncio
 import dataService.data_service as dt_srv
 from data.guild_show import GuildPretty
 from data.member_show import MemberPretty
@@ -120,8 +121,9 @@ async def embed_help_cool_game(channel):
 
 
 async def cookie_quote(channel):
-    await channel.send('**Dood cookie? cookie what?** Now take this, idc')
-    await channel.send(':cookie:')
+    one = asyncio.create_task(channel.send('**Dood cookie? cookie what?** Now take this, idc'))
+    two = asyncio.create_task(channel.send(':cookie:'))
+    asyncio.gather(one, two)
 
 
 async def game_terminate(message_meta):
@@ -474,8 +476,12 @@ async def emoji_cheat_sheet(author, page_change: int, message_meta: discord.mess
             ind += 1
         message = await message_meta.channel.send(content=None, embed=embed_emote)
         # message = await message_meta.channel.fetch_message(id=message_meta.channel.last_message_id)
-        await message.add_reaction(emoji='⬅')
-        await message.add_reaction(emoji='➡')
+
+        one = asyncio.create_task(message.add_reaction(emoji='⬅'))
+        two = asyncio.create_task(message.add_reaction(emoji='➡'))
+        # three = asyncio.create_task(message.add_reaction(emoji='🤨'))
+        # four = asyncio.create_task(message.add_reaction(emoji='❤️'))
+        asyncio.gather(one, two)
     else:
         embed_emote = message_meta.embeds[0]
         embed_emote.clear_fields()
