@@ -434,7 +434,7 @@ async def try_formatted_interpreter(message: discord.message):
                 list_content[i] = f'<{animated(emote.animated)}:{emote.name}:{emote._id}>'
         send_string += ' '.join(list_content) + '\n'
     if found:
-        await message.channel.send(send_string)
+        await message.channel.send(send_string.replace('-d', ''))
         if list_content[-1] == '-d':
             await message.delete()
 
