@@ -418,8 +418,8 @@ def animated(if_ani: bool) -> str:
         return ''
 
 
-async def try_formatted_interpreter(content: str, channel: discord.channel, display_name: str):
-    line_content = content.split('\n')
+async def try_formatted_interpreter(message: discord.message):
+    line_content = message.content.split('\n')
 
     found = False
     send_string = ''
@@ -427,14 +427,17 @@ async def try_formatted_interpreter(content: str, channel: discord.channel, disp
         list_content = string.split()
         for i in range(len(list_content)):
             if list_content[i][0] == list_content[i][-1] == ':':
-                emote = dt_srv.get_emote(list_content[i].replace(':', ''), channel.guild.id)
+                emote = dt_srv.get_emote(list_content[i].replace(':', ''), message.channel.guild.id)
                 if not emote:
                     continue
                 found = True
                 list_content[i] = f'<{animated(emote.animated)}:{emote.name}:{emote._id}>'
         send_string += ' '.join(list_content) + '\n'
     if found:
-        await channel.send(send_string)
+        await message.channel.send(send_string)
+        if list_content[-1] == '-d':
+            await message.delete()
+
 
 
 def obtain_pg_number(footer: str):

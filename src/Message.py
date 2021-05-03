@@ -115,7 +115,7 @@ async def message_event_handling(message_meta: discord.message):
 
     prefix_acceptable = dt_srv.find_prefix_by_guild_id(message_meta.guild.id)
 
-    await Send.try_formatted_interpreter(message_meta.content, message_meta.channel, message_meta.author.display_name)
+    await Send.try_formatted_interpreter(message_meta)
 
     if message_meta.content.lower() in ('uwu', 'owo'):
         await Send.uwu(message_meta.channel)
