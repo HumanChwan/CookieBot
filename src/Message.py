@@ -132,6 +132,13 @@ async def message_event_handling(message_meta: discord.message):
         if command in HelpCmd:
             await Send.embed_help(message_meta.channel)
 
+        elif command == 'purge':
+            message_as_list.remove(message_as_list[0])
+            if not message_as_list or not MathCookie.check_integer(message_as_list[0], False):
+                await Send.purge(message_meta)
+            else:
+                await Send.purge(message_meta, message_as_list[0])
+
         elif command == 'math':
             message_as_list.remove(message_as_list[0])
             answer = MathCookie.math_cookie(message_as_list)

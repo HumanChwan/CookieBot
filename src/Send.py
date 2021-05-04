@@ -514,3 +514,11 @@ async def uwu(channel: discord.channel):
                     '⢑⢕⠃⡈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢃⢕⢕⢕\n' +
                     '⣆⢕⠄⢱⣄⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⢁⢕⢕⠕⢁\n' +
                     '⣿⣦⡀⣿⣿⣷⣶⣬⣍⣛⣛⣛⡛⠿⠿⠿⠛⠛⢛⣛⣉⣭⣤⣂⢜⠕⢑⣡⣴⣿')
+
+
+async def purge(message: discord.message, lim=100):
+    await message.channel.send(f'Purging {lim} messages')
+    await message.channel.send('.')
+    await message.channel.send('.')
+    await message.channel.send('.')
+    await message.channel.purge(lim+4)
