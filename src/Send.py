@@ -521,4 +521,4 @@ async def purge(message: discord.message, lim=100):
     await message.channel.send('.')
     await message.channel.send('.')
     await message.channel.send('.')
-    await message.channel.purge(lim+4)
+    await message.channel.purge(limit=lim+4)
