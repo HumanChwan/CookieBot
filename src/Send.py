@@ -396,6 +396,7 @@ async def try_formatted_interpreter(message: discord.message):
 
     found = False
     send_string = ''
+    list_content = []
     for string in line_content:
         list_content = string.split()
         for i in range(len(list_content)):
