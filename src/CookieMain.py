@@ -1,13 +1,13 @@
 import os
 
 import discord
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 import Message
 import Send
 import dataService.data_service as dt_srv
 import data.mongo_setup as mongo_setup
 
-# load_dotenv()
+load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 
@@ -52,7 +52,6 @@ async def on_guild_emojis_update(guild: discord.guild, before, after):
         dt_srv.update_emote_exist(emote.name, emote.id, guild.id, emote.animated)
     for emote in set(before)-set(after):
         dt_srv.remove_emoji(emote.id)
-
 
 
 @cookie_bot.event

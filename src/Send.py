@@ -123,7 +123,7 @@ async def embed_help_cool_game(channel):
 async def cookie_quote(channel):
     one = asyncio.create_task(channel.send('**Dood cookie? cookie what?** Now take this, idc'))
     two = asyncio.create_task(channel.send(':cookie:'))
-    asyncio.gather(one, two)
+    await asyncio.gather(one, two)
 
 
 async def game_terminate(message_meta):
@@ -325,7 +325,7 @@ def kick(self: bool, victim: str, bad_boi: int):
 
 def punch(self: bool, victim: str, bad_boi: int):
     if self:
-        message_displayed = ':( why slap yourself man, are you sad? (P.S. : You still gonna be punched :smile:)'
+        message_displayed = ':( why punch yourself man, are you sad? (P.S. : You still gonna be punched :smile:)'
     else:
         message_displayed = f'kuso gaki {victim} got punched by {bad_boi}-kun!!'
     ind = random_between(0, len(punch_list) - 1)
@@ -367,42 +367,15 @@ def lewd(self: bool, victim: str, bad_boi: int):
     return message_displayed, url_lewd
 
 
-action = (
-    spank,
-    kill,
-    kick,
-    slap,
-    punch,
-    kiss,
-    lewd
-)
-
-
 async def perform_action_embed(author: discord.member, mentions, channel: discord.channel,
                                command: str):
-    cmd_coefficient = 0
-    if command == 'spank':
-        cmd_coefficient = 1
-    elif command == 'kill':
-        cmd_coefficient = 2
-    elif command == 'kick':
-        cmd_coefficient = 3
-    elif command == 'slap':
-        cmd_coefficient = 4
-    elif command == 'punch':
-        cmd_coefficient = 5
-    elif command == 'kiss':
-        cmd_coefficient = 6
-    elif command == 'lewd':
-        cmd_coefficient = 7
-
     to_be_victimised = author
     if mentions:
         to_be_victimised = mentions[0]
 
     self = to_be_victimised == author
 
-    get_data = action[cmd_coefficient-1](self, to_be_victimised.name, author.name)
+    get_data = eval(command)(self, to_be_victimised.name, author.name)
 
     embed_boi = discord.Embed(title=command.upper()+'!!', description='**'+get_data[0]+'**')
     embed_boi.set_author(name=author.name, icon_url=author.avatar_url)
@@ -437,7 +410,6 @@ async def try_formatted_interpreter(message: discord.message):
         await message.channel.send(send_string.replace('-d', ''))
         if list_content[-1] == '-d':
             await message.delete()
-
 
 
 def obtain_pg_number(footer: str):
@@ -482,9 +454,7 @@ async def emoji_cheat_sheet(author, page_change: int, message_meta: discord.mess
 
         one = asyncio.create_task(message.add_reaction(emoji='⬅'))
         two = asyncio.create_task(message.add_reaction(emoji='➡'))
-        # three = asyncio.create_task(message.add_reaction(emoji='🤨'))
-        # four = asyncio.create_task(message.add_reaction(emoji='❤️'))
-        asyncio.gather(one, two)
+        await asyncio.gather(one, two)
     else:
         embed_emote = message_meta.embeds[0]
         embed_emote.clear_fields()
