@@ -358,7 +358,7 @@ def kiss(self: bool, victim: str, bad_boi: int):
 
 def lewd(self: bool, victim: str, bad_boi: int):
     if self:
-        message_displayed = 'bruhhhhhh noicee :o :shrug1:'
+        message_displayed = 'bruhhhhhh noicee :o <:marii_shrug:830754229551497276>'
     else:
         message_displayed = f'lewd lewd everywhere :pensive: horny mfs {victim} and {bad_boi}'
     ind = random_between(0, len(lewd_list) - 1)
