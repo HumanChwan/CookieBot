@@ -391,17 +391,33 @@ def animated(if_ani: bool) -> str:
         return ''
 
 
+
+
+
+
 async def try_formatted_interpreter(message: discord.message):
     line_content = message.content.split('\n')
+
+    def contains(list_dic, filter):
+        for x in list_dic:
+            if filter(x):
+                return x
+        pass
 
     found = False
     send_string = ''
     list_content = []
+    emotes_got = []
     for string in line_content:
         list_content = string.split()
         for i in range(len(list_content)):
             if list_content[i][0] == list_content[i][-1] == ':':
-                emote = dt_srv.get_emote(list_content[i].replace(':', ''), message.channel.guild.id)
+                one = list_content[i].replace(':', '')
+                emote = contains(emotes_got, lambda x: x.name == one)
+                if not emote:
+                    emote = dt_srv.get_emote(one, message.channel.guild.id)
+                    if emote:
+                        emotes_got.append(emote)
                 if not emote:
                     continue
                 found = True
