@@ -218,17 +218,18 @@ def emote_setup(emojis):
         emote.save()
 
 
-def get_emote(name: str, g_id: int):
-    emote_list = Emoji.objects(name=name)
-
-    if not emote_list:
-        return None
-    emote = emote_list[0]
-    for emote in emote_list:
-        if emote.guild_id == g_id:
-            return emote
-
-    return emote
+def get_emote(g_id: int):
+    return Emoji.objects()
+    # emote_list = Emoji.objects(name=name)
+    #
+    # if not emote_list:
+    #     pass
+    # emote = emote_list[0]
+    # for emote in emote_list:
+    #     if emote.guild_id == g_id:
+    #         return emote
+    #
+    # return emote
 
 
 def cnt_emote():
