@@ -1,4 +1,5 @@
 import datetime
+import random
 from typing import List
 
 import discord
@@ -295,8 +296,7 @@ def spank(self: bool, victim: str, bad_boi: int):
     else:
         message_displayed = ':flushed: :flushed: :flushed: nyaaaaa~~!!' \
                             f' {victim} just got spanked by {bad_boi}'
-    ind = random_between(0, len(spank_list)-1)
-    url_spank = spank_list[ind]
+    url_spank = random.choice(spank_list)
 
     return message_displayed, url_spank
 
@@ -306,8 +306,7 @@ def kill(self: bool, victim: str, bad_boi: int):
         message_displayed = 'F, why so sad man, take puchi <3'
     else:
         message_displayed = f'kekek, DIEEEE!!!!! :ghost:, {victim} got killed by {bad_boi}'
-    ind = random_between(0, len(kill_list) - 1)
-    url_kill = kill_list[ind]
+    url_kill = random.choice(kill_list)
 
     return message_displayed, url_kill
 
@@ -317,8 +316,7 @@ def kick(self: bool, victim: str, bad_boi: int):
         message_displayed = 'Hehe, true you do deserved to be kicked, slimey-simp :smiling_imp:'
     else:
         message_displayed = f'Yes, {victim} get kicked like a good boi, nice kogeki {bad_boi}-chan!!'
-    ind = random_between(0, len(kick_list) - 1)
-    url_kick = kick_list[ind]
+    url_kick = random.choice(kick_list)
 
     return message_displayed, url_kick
 
@@ -328,8 +326,7 @@ def punch(self: bool, victim: str, bad_boi: int):
         message_displayed = ':( why punch yourself man, are you sad? (P.S. : You still gonna be punched :smile:)'
     else:
         message_displayed = f'kuso gaki {victim} got punched by {bad_boi}-kun!!'
-    ind = random_between(0, len(punch_list) - 1)
-    url_punch = punch_list[ind]
+    url_punch = random.choice(punch_list)
 
     return message_displayed, url_punch
 
@@ -339,8 +336,7 @@ def slap(self: bool, victim: str, bad_boi: int):
         message_displayed = 'YESSSS!!! Harder!!! ~~nyaaa!!!'
     else:
         message_displayed = f'{victim} got slapped by {bad_boi}!! LOL'
-    ind = random_between(0, len(slap_list) - 1)
-    url_slap = slap_list[ind]
+    url_slap = random.choice(slap_list)
 
     return message_displayed, url_slap
 
@@ -350,8 +346,7 @@ def kiss(self: bool, victim: str, bad_boi: int):
         message_displayed = 'Bruh, lol respect o7 pretty self-sufficient :thumbsup:'
     else:
         message_displayed = f'{victim} got kissed by {bad_boi}, kyaaaa!!.... ok :/'
-    ind = random_between(0, len(kiss_list) - 1)
-    url_kiss = kiss_list[ind]
+    url_kiss = random.choice(kiss_list)
 
     return message_displayed, url_kiss
 
@@ -361,8 +356,7 @@ def lewd(self: bool, victim: str, bad_boi: int):
         message_displayed = 'bruhhhhhh noicee :o <:marii_shrug:830754229551497276>'
     else:
         message_displayed = f'lewd lewd everywhere :pensive: horny mfs {victim} and {bad_boi}'
-    ind = random_between(0, len(lewd_list) - 1)
-    url_lewd = lewd_list[ind]
+    url_lewd = random.choice(lewd_list)
 
     return message_displayed, url_lewd
 
