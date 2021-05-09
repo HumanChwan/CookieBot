@@ -501,3 +501,7 @@ async def purge(message: discord.message, lim=100):
     await message.channel.send('.')
     await message.channel.send('.')
     await message.channel.purge(limit=lim + 5)
+
+
+async def error_purge(channel: discord.channel):
+    await channel.send('Invalid Purge Command, specify amount to be deleted: `ck purge <number>`')

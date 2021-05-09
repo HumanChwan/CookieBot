@@ -135,7 +135,7 @@ async def message_event_handling(message_meta: discord.message):
         elif command == 'purge':
             message_as_list.remove(message_as_list[0])
             if not message_as_list or not MathCookie.check_integer(message_as_list[0], False):
-                await Send.purge(message_meta)
+                await Send.error_purge(message_meta.channel)
             else:
                 await Send.purge(message_meta, int(message_as_list[0]))
 
