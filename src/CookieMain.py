@@ -51,7 +51,7 @@ async def on_guild_emojis_update(guild: discord.guild, before, after):
     for emote in after:
         dt_srv.update_emote_exist(emote.name, emote.id, guild.id, emote.animated)
     for emote in set(before)-set(after):
-        dt_srv.remove_emoji(emote.id)
+        dt_srv.remove_emoji(emote.id, emote.name)
 
 
 @cookie_bot.event
