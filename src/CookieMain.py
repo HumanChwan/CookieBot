@@ -1,13 +1,13 @@
 import os
 
 import discord
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 import Message
 import Send
 import dataService.data_service as dt_srv
 import data.mongo_setup as mongo_setup
 
-# load_dotenv()
+load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 

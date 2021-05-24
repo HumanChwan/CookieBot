@@ -505,3 +505,8 @@ async def purge(message: discord.message, lim=100):
 
 async def error_purge(channel: discord.channel):
     await channel.send('Invalid Purge Command, specify amount to be deleted: `ck purge <number>`')
+
+
+async def online_members(members, channel: discord.channel):
+    for member in members:
+        await channel.send(f'{member.name} is `{member.status}`')

@@ -120,6 +120,9 @@ async def message_event_handling(message_meta: discord.message):
     if message_meta.content.lower() in ('uwu', 'owo'):
         await Send.uwu(message_meta.channel)
 
+    if message_meta.content.lower() == 'get members status':
+        await Send.online_members(message_meta.guild.members, message_meta.channel)
+
     if message_as_list[0] in prefix_acceptable:
         message_as_list.remove(message_as_list[0])
 
