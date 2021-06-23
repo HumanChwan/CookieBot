@@ -134,14 +134,14 @@ def evaluate(postfix_list):
             try:
                 one = float(stack[-1])
                 stack.pop()
-            except (ValueError, IndexError):
-                return None
-            try:
                 two = float(stack[-1])
                 stack.pop()
             except (ValueError, IndexError):
                 return None
-            stack.append(str(arithmetic(function_name[j], two, one)))
+            try:
+                stack.append(str(arithmetic(function_name[j], two, one)))
+            except ZeroDivisionError:
+                return None
     answer = float(stack[-1])
     return answer
 
@@ -193,7 +193,7 @@ def math_cookie(infix_list):
 
     answer = expression_processor(' '.join(infix_list))
 
-    if not answer:
+    if (not answer) and answer != 0:
         return None
 
     answer = round(answer, 4)

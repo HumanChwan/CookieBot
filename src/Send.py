@@ -1,6 +1,6 @@
 import datetime
 import random
-from typing import List
+from typing import List, Optional
 
 import discord
 import asyncio
@@ -385,43 +385,107 @@ def animated(if_ani: bool) -> str:
         return ''
 
 
+def is_emote_format(string, open_index, close_index):
+    if open_index == 0:
+        return False
+
+    if string[open_index - 1] != '<':
+        if open_index == 1 or string[open_index - 1] != 'a':
+            return False
+        if string[open_index - 2] != '<':
+            return False
+
+    # emote satisfies: <:hello:... or <a:hello:.... format
+    if close_index == len(string):
+        return False
+
+    has_numbers_behind = False
+    for char in string[close_index + 1:]:
+        if char == '>':
+            """
+                emote satisfies: <:hello:{}> or <a:hello:{}>
+                {} can either be empty or has numbers only
+                {} if empty then considered a render-able emoji
+                else it has to be a discord-rendered emoji, since discord discards any other format. 
+            """
+            return has_numbers_behind
+        elif '0' <= char <= '9':
+            has_numbers_behind = True
+        else:
+            return False
+
+    return False
+
+
 async def try_formatted_interpreter(message: discord.message):
     line_content = message.content.split('\n')
 
     found = False
     send_string = ''
-    list_content = []
-    emotes_got = dt_srv.get_emote(message.channel.guild.id)
+    emotes_got = []
 
-    def contains(check):
-        for x in emotes_got:
-            if check(x):
-                return x
-        pass
+    def contains(emoji_alias) -> Optional[Emoji]:
+        for emoji in emotes_got:
+            if emoji.name == emoji_alias:
+                return emoji
+
+        not_used_emote = dt_srv.get_emote(emoji_alias)
+        if not_used_emote:
+            emotes_got.append(not_used_emote)
+            return not_used_emote
+
+        return None
 
     for string in line_content:
-        list_content = string.split()
-        for i in range(len(list_content)):
-            if list_content[i][0] == list_content[i][-1] == ':':
-                one = list_content[i].replace(':', '')
-                emote = contains(lambda x: x.name == one)
-                # emote = contains(emotes_got, lambda x: x.name == one)
-                # if not emote:
-                #     emote = dt_srv.get_emote(one, message.channel.guild.id)
-                #     if emote:
-                #         emotes_got.append(emote)
-                if not emote:
-                    continue
-                found = True
-                list_content[i] = f'<{animated(emote.animated)}:{emote.name}:{emote._id}>'
-        send_string += ' '.join(list_content) + '\n'
+        open_index = None
+        send_line = ''
+        possible_emoji = ''
+        for i in range(len(string)):
+
+            if string[i] == ':':
+                if open_index is not None:
+                    possible_emoji += ':'
+                    if open_index == i - 1 or is_emote_format(string, open_index, i):
+                        send_line += possible_emoji
+                        possible_emoji = ''
+                        continue
+                    emoji_name = possible_emoji[1:-1]
+                    emote = contains(emoji_name)
+
+                    if not emote:
+                        send_line += possible_emoji
+                        continue
+
+                    found = True
+                    send_line += f'<{animated(emote.animated)}:{emote.name}:{emote._id}>'
+
+                    open_index = None
+                    possible_emoji = ''
+                else:
+                    send_line += possible_emoji
+                    possible_emoji = ':'
+                    open_index = i
+            else:
+                if open_index is not None:
+                    if string[i] == ' ':
+                        open_index = None
+                    else:
+                        possible_emoji += string[i]
+                else:
+                    send_line += string[i]
+
+        send_line += possible_emoji
+
+        # send_string += ' '.join(list_content) + '\n'
+        send_string += send_line + '\n'
     if found:
-        await message.channel.send(send_string.replace('-d', ''))
-        if list_content[-1] == '-d':
+        channel = message.channel
+        if send_string[-3:-1] == '-d':
             await message.delete()
+        await channel.send(send_string.replace('-d', ''))
 
 
-def obtain_pg_number(footer: str):
+def obtain_pg_number(footer: str) -> int:
     footer = footer.replace('Page ', '')
     pg = ''
     for i in footer:

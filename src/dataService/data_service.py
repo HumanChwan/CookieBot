@@ -1,3 +1,5 @@
+from typing import Optional
+
 import discord
 
 import MathCookie
@@ -8,6 +10,7 @@ from data.guild_show import GuildPretty
 from data.member_show import MemberPretty
 from functools import cmp_to_key
 from data.emoji import Emoji
+from mongoengine.queryset.visitor import Q
 
 
 def create_cool_game() -> CoolGame:
@@ -220,18 +223,15 @@ def emote_setup(emojis):
         emote.save()
 
 
-def get_emote(g_id: int):
-    return Emoji.objects()
-    # emote_list = Emoji.objects(name=name)
+def get_emote(emoji_alias: str) -> Optional[Emoji]:
+    return Emoji.objects(name=emoji_alias).first()
+    # matching_emotes = Emoji.objects(name=emoji_alias)
     #
-    # if not emote_list:
-    #     pass
-    # emote = emote_list[0]
-    # for emote in emote_list:
-    #     if emote.guild_id == g_id:
-    #         return emote
+    # for emoji in matching_emotes:
+    #     if emoji.guild_id != g_id or emoji.animated:
+    #         return emoji
     #
-    # return emote
+    # return None
 
 
 def cnt_emote():
@@ -245,3 +245,8 @@ def get_emotes(start: int, end: int):
     if emotes is None:
         emotes = Emoji.objects[start:]
     return emotes
+
+
+def get_emote_name_by_guild_id(g_id: int):
+    guild_emotes = Emoji.objects(Q(guild_id=g_id) & Q(animated=False))
+    return [emote.name for emote in guild_emotes]

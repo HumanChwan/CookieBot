@@ -145,7 +145,7 @@ async def message_event_handling(message_meta: discord.message):
         elif command == 'math':
             message_as_list.remove(message_as_list[0])
             answer = MathCookie.math_cookie(message_as_list)
-            if not answer:
+            if (not answer) and answer != 0:
                 await Send.incorrect_expression(message_meta)
             else:
                 await Send.correct_expression(answer, message_meta)
