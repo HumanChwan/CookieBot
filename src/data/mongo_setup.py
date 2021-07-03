@@ -3,7 +3,7 @@ import os
 # from dotenv import load_dotenv
 
 # load_dotenv()
-# srv_uri = os.getenv('MONGODB_SRV')
+srv_uri = os.getenv('MONGODB_SRV')
 
 
 def mongo_init_():
