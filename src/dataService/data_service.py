@@ -68,9 +68,10 @@ def update_emote_exist(name: str, e_id: int, g_id: int, animated: bool):
 
 
 def remove_emoji(e_id: int, e_name: str):
-    emote = Emoji.objects(_id=e_id).first()
-    if emote.name == e_name:
-        emote.delete()
+    try:
+        print(Emoji.objects(_id=e_id).first().name)
+    except ValueError as e:
+        print(e)
 
 
 def find_welcome_channel_id(id_to_be_searched: int) -> int:
@@ -250,3 +251,14 @@ def get_emotes(start: int, end: int):
 def get_emote_name_by_guild_id(g_id: int):
     guild_emotes = Emoji.objects(Q(guild_id=g_id) & Q(animated=False))
     return [emote.name for emote in guild_emotes]
+
+
+def handle_emote_delete(before, after):
+    for prev_emote in before:
+        found = False
+        for new_emote in after:
+            if new_emote.id == prev_emote.id:
+                found = True
+                break
+        if not found:
+            Emoji.objects(_id=prev_emote.id).delete()

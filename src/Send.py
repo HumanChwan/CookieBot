@@ -84,15 +84,15 @@ lewd_list = (
 
 
 def help_cool_game():
-    return 'Upon initiating the game you would be asked to set some characteristics.',\
-           'After Setting of characteristics, you would asked to enter a Number(Four-Digit).',\
-            'The entered number would be processed as a guess.',\
-            'After Processing \'Correct Digits\' and \'Correct Places\' would displayed ' +\
-            'which represent the correct digits and correct Places of the digits ' +\
-            'wrt to the random system generated number.',\
-            'Following the end of maximum guesses or by guessing the Correct the number, game will end. :thumbsup:'\
-            'Time Out for entering the number is set at 5 minutes after which game will terminate automatically.',\
-            'Entering EndGame will terminate the game in between the game.',
+    return 'Upon initiating the game you would be asked to set some characteristics.', \
+           'After Setting of characteristics, you would asked to enter a Number(Four-Digit).', \
+           'The entered number would be processed as a guess.', \
+           'After Processing \'Correct Digits\' and \'Correct Places\' would displayed ' + \
+           'which represent the correct digits and correct Places of the digits ' + \
+           'wrt to the random system generated number.', \
+           'Following the end of maximum guesses or by guessing the Correct the number, game will end. :thumbsup:' \
+           'Time Out for entering the number is set at 5 minutes after which game will terminate automatically.', \
+           'Entering EndGame will terminate the game in between the game.',
 
 
 async def embed_help(channel):
@@ -153,7 +153,7 @@ async def incorrect_expression(message_meta: discord.message):
 
 async def correct_expression(answer: int, message_meta: discord.message):
     await message_meta.channel.send(f':cookie: **{message_meta.author.name} |** Nice there you go,' +
-                               f' Your expression yieldeth : **{answer}**')
+                                    f' Your expression yieldeth : **{answer}**')
 
 
 async def parallel_init_error(message_meta: discord.message):
@@ -171,7 +171,7 @@ async def init_successful(message_meta: discord.message):
 
 async def empty_terminate_error(message_meta: discord.message):
     await message_meta.channel.send(f':cookie: **{message_meta.author.name} |**' +
-                               ' Lol! what do you wanna terminate? _B A K A_ :nerd:')
+                                    ' Lol! what do you wanna terminate? _B A K A_ :nerd:')
 
 
 async def terminate_successful(message_meta: discord.message):
@@ -199,7 +199,7 @@ async def ran_out_of_tries(message_meta: discord.message, param):
     embed_one = discord.Embed(title='Ran Out Of Tries :disappointed:',
                               description=f'Player: <@{message_meta.author.id}>')
     embed_one.add_field(name='Better Luck Next Time :thumbsup:', value='_ _', inline=False)
-    embed_one.add_field(name='The Random number was :', value=param[0]+param[1]+param[2]+param[3])
+    embed_one.add_field(name='The Random number was :', value=param[0] + param[1] + param[2] + param[3])
 
     await message_meta.channel.send(content=None, embed=embed_one)
 
@@ -208,7 +208,7 @@ async def present_guild_data(author: discord.member,
                              guild_data: GuildPretty, guild_discord: discord.guild, channel: discord.channel):
     embed_boi = discord.Embed(title=':cookie: **Cookie Stats**', description='_ _')
     embed_boi.set_thumbnail(url=
-                    'https://github.com/HumanChwan/CookieBot/blob/master/Cookie_Monster.png?raw=true')
+                            'https://github.com/HumanChwan/CookieBot/blob/master/Cookie_Monster.png?raw=true')
     embed_boi.set_author(name=author.name, icon_url=author.avatar_url)
     # embed ------> guild_discord.name
     if guild_data.cool_game_data['One'][1]:
@@ -275,7 +275,7 @@ async def present_member_data(author: discord.member, mention_name: str,
                               channel: discord.channel):
     embed_boi = discord.Embed(title=':cookie: **Profile Stats**', description='_ _')
     embed_boi.set_thumbnail(url=
-                    'https://github.com/HumanChwan/CookieBot/blob/master/Cookie_Monster.png?raw=true')
+                            'https://github.com/HumanChwan/CookieBot/blob/master/Cookie_Monster.png?raw=true')
     embed_boi.set_author(name=author.name, icon_url=author.avatar_url)
 
     embed_boi.add_field(name=f'__**CoolGame Stats: {mention_name}**__ ', value='_ _', inline=False)
@@ -284,7 +284,8 @@ async def present_member_data(author: discord.member, mention_name: str,
     embed_boi.add_field(name=f' 3. Total Games Won    : {member_show.total_won}', value='_ _', inline=False)
     embed_boi.add_field(name='_ _', value='_ _', inline=False)
 
-    date = str(member_show_join.day) + ' ' + month_finder[member_show_join.month-1] + ', ' + str(member_show_join.year)
+    date = str(member_show_join.day) + ' ' + month_finder[member_show_join.month - 1] + ', ' + str(
+        member_show_join.year)
     embed_boi.add_field(name=f'**Joined the Server on :** __{date}__', value='_ _', inline=False)
 
     await channel.send(content=None, embed=embed_boi)
@@ -371,7 +372,7 @@ async def perform_action_embed(author: discord.member, mentions, channel: discor
 
     get_data = eval(command)(self, to_be_victimised.name, author.name)
 
-    embed_boi = discord.Embed(title=command.upper()+'!!', description='**'+get_data[0]+'**')
+    embed_boi = discord.Embed(title=command.upper() + '!!', description='**' + get_data[0] + '**', colour=3371166)
     embed_boi.set_author(name=author.name, icon_url=author.avatar_url)
     embed_boi.set_image(url=get_data[1])
 
@@ -379,13 +380,20 @@ async def perform_action_embed(author: discord.member, mentions, channel: discor
 
 
 def animated(if_ani: bool) -> str:
-    if if_ani:
-        return 'a'
-    else:
-        return ''
+    return 'a' if if_ani else ''
 
 
-def is_emote_format(string, open_index, close_index):
+def is_emote_format(string, open_index, close_index, linear_quote, block_quote):
+    if block_quote:
+        return True
+
+    string_ahead: str = string[close_index + 1:]
+
+    if linear_quote:
+        for char in string_ahead:
+            if char == '`':
+                return True
+
     if open_index == 0:
         return False
 
@@ -399,8 +407,8 @@ def is_emote_format(string, open_index, close_index):
     if close_index == len(string):
         return False
 
-    has_numbers_behind = False
-    for char in string[close_index + 1:]:
+    has_numbers_behind: bool = False
+    for char in string_ahead:
         if char == '>':
             """
                 emote satisfies: <:hello:{}> or <a:hello:{}>
@@ -418,11 +426,12 @@ def is_emote_format(string, open_index, close_index):
 
 
 async def try_formatted_interpreter(message: discord.message):
-    line_content = message.content.split('\n')
+    line_content: List[str] = message.content.split('\n')
 
-    found = False
-    send_string = ''
-    emotes_got = []
+    found: bool = False
+    send_string: str = ''
+    emotes_got: List[Emoji] = []
+    block_quote: bool = False
 
     def contains(emoji_alias) -> Optional[Emoji]:
         for emoji in emotes_got:
@@ -437,15 +446,16 @@ async def try_formatted_interpreter(message: discord.message):
         return None
 
     for string in line_content:
-        open_index = None
-        send_line = ''
-        possible_emoji = ''
+        open_index: int = -1
+        send_line: str = ''
+        possible_emoji: str = ''
+        linear_quote: bool = False
         for i in range(len(string)):
 
             if string[i] == ':':
-                if open_index is not None:
+                if open_index != -1:
                     possible_emoji += ':'
-                    if open_index == i - 1 or is_emote_format(string, open_index, i):
+                    if open_index == i - 1 or is_emote_format(string, open_index, i, linear_quote, block_quote):
                         send_line += possible_emoji
                         possible_emoji = ''
                         continue
@@ -459,24 +469,31 @@ async def try_formatted_interpreter(message: discord.message):
                     found = True
                     send_line += f'<{animated(emote.animated)}:{emote.name}:{emote._id}>'
 
-                    open_index = None
+                    open_index = -1
                     possible_emoji = ''
                 else:
                     send_line += possible_emoji
                     possible_emoji = ':'
                     open_index = i
             else:
-                if open_index is not None:
+                if open_index != -1:
                     if string[i] == ' ':
-                        open_index = None
+                        open_index = -1
                     else:
                         possible_emoji += string[i]
                 else:
                     send_line += string[i]
 
+            if string[i] == '`':
+                if i > 1 and string[i - 1] == string[i - 2] == '`':
+                    block_quote = not block_quote
+                    continue
+
+                if not block_quote:
+                    linear_quote = not linear_quote
+
         send_line += possible_emoji
 
-        # send_string += ' '.join(list_content) + '\n'
         send_string += send_line + '\n'
     if found:
         channel = message.channel
@@ -486,8 +503,8 @@ async def try_formatted_interpreter(message: discord.message):
 
 
 def obtain_pg_number(footer: str) -> int:
-    footer = footer.replace('Page ', '')
-    pg = ''
+    footer: str = footer.replace('Page ', '')
+    pg: str = ''
     for i in footer:
         if i == '/':
             break
@@ -497,7 +514,7 @@ def obtain_pg_number(footer: str) -> int:
 
 
 async def emoji_cheat_sheet(author, page_change: int, message_meta: discord.message):
-    total_pages = (dt_srv.cnt_emote() + 9)//10
+    total_pages: int = (dt_srv.cnt_emote() + 9) // 10
     if total_pages == 0:
         total_pages = 1
 
@@ -510,17 +527,17 @@ async def emoji_cheat_sheet(author, page_change: int, message_meta: discord.mess
             return
 
     if page_change == 0:
-        embed_emote = discord.Embed(title='Emojis', description='_ _')
+        embed_emote: discord.Embed = discord.Embed(title='Emojis', description='_ _', colour=3371166)
         embed_emote.set_author(name=author.name, icon_url=author.avatar_url)
         embed_emote.set_footer(text=f'Page {page_number}/{total_pages}')
         embed_emote.set_thumbnail(url=
-                                'https://github.com/HumanChwan/CookieBot/blob/master/Cookie_Monster.png?raw=true')
+                                  'https://github.com/HumanChwan/CookieBot/blob/master/Cookie_Monster.png?raw=true')
 
-        emotes = dt_srv.get_emotes(0, 10)
-        ind = 1
+        emotes: List[Emoji] = dt_srv.get_emotes(0, 10)
+        ind: int = 1
         for emote in emotes:
             embed_emote.add_field(name=f'**{ind}.** <{animated(emote.animated)}:{emote.name}:{emote._id}>',
-                                  value=f'**:{emote.name}:** | ID : {emote._id}', inline=False)
+                                  value=f'`:{emote.name}:` | ID : {emote._id}', inline=False)
             ind += 1
         message = await message_meta.channel.send(content=None, embed=embed_emote)
         # message = await message_meta.channel.fetch_message(id=message_meta.channel.last_message_id)
@@ -545,21 +562,21 @@ async def emoji_cheat_sheet(author, page_change: int, message_meta: discord.mess
 
 async def uwu(channel: discord.channel):
     await channel.send('⢐⢕⢕⢕⢕⢕⣕⢕⢕⠕⠁⢕⢕⢕⢕⢕⢕⢕⢕⠅⡄⢕⢕⢕⢕⢕⢕⢕⢕⢕\n' +
-                    '⢕⢕⢕⢕⢕⠅⢗⢕⠕⣠⠄⣗⢕⢕⠕⢕⢕⢕⠕⢠⣿⠐⢕⢕⢕⠑⢕⢕⠵⢕\n' +
-                    '⢕⢕⢕⢕⠁⢜⠕⢁⣴⣿⡇⢓⢕⢵⢐⢕⢕⠕⢁⣾⢿⣧⠑⢕⢕⠄⢑⢕⠅⢕\n' +
-                    '⢕⢕⠵⢁⠔⢁⣤⣤⣶⣶⣶⡐⣕⢽⠐⢕⠕⣡⣾⣶⣶⣶⣤⡁⢓⢕⠄⢑⢅⢑\n' +
-                    '⠍⣧⠄⣶⣾⣿⣿⣿⣿⣿⣿⣷⣔⢕⢄⢡⣾⣿⣿⣿⣿⣿⣿⣿⣦⡑⢕⢤⠱⢐\n' +
-                    '⢠⢕⠅⣾⣿⠋⢿⣿⣿⣿⠉⣿⣿⣷⣦⣶⣽⣿⣿⠈⣿⣿⣿⣿⠏⢹⣷⣷⡅⢐\n' +
-                    '⣔⢕⢥⢻⣿⡀⠈⠛⠛⠁⢠⣿⣿⣿⣿⣿⣿⣿⣿⡀⠈⠛⠛⠁⠄⣼⣿⣿⡇⢔\n' +
-                    '⢕⢕⢽⢸⢟⢟⢖⢖⢤⣶⡟⢻⣿⡿⠻⣿⣿⡟⢀⣿⣦⢤⢤⢔⢞⢿⢿⣿⠁⢕\n' +
-                    '⢕⢕⠅⣐⢕⢕⢕⢕⢕⣿⣿⡄⠛⢀⣦⠈⠛⢁⣼⣿⢗⢕⢕⢕⢕⢕⢕⡏⣘⢕\n' +
-                    '⢕⢕⠅⢓⣕⣕⣕⣕⣵⣿⣿⣿⣾⣿⣿⣿⣿⣿⣿⣿⣷⣕⢕⢕⢕⢕⡵⢀⢕⢕\n' +
-                    '⢑⢕⠃⡈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢃⢕⢕⢕\n' +
-                    '⣆⢕⠄⢱⣄⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⢁⢕⢕⠕⢁\n' +
-                    '⣿⣦⡀⣿⣿⣷⣶⣬⣍⣛⣛⣛⡛⠿⠿⠿⠛⠛⢛⣛⣉⣭⣤⣂⢜⠕⢑⣡⣴⣿')
+                       '⢕⢕⢕⢕⢕⠅⢗⢕⠕⣠⠄⣗⢕⢕⠕⢕⢕⢕⠕⢠⣿⠐⢕⢕⢕⠑⢕⢕⠵⢕\n' +
+                       '⢕⢕⢕⢕⠁⢜⠕⢁⣴⣿⡇⢓⢕⢵⢐⢕⢕⠕⢁⣾⢿⣧⠑⢕⢕⠄⢑⢕⠅⢕\n' +
+                       '⢕⢕⠵⢁⠔⢁⣤⣤⣶⣶⣶⡐⣕⢽⠐⢕⠕⣡⣾⣶⣶⣶⣤⡁⢓⢕⠄⢑⢅⢑\n' +
+                       '⠍⣧⠄⣶⣾⣿⣿⣿⣿⣿⣿⣷⣔⢕⢄⢡⣾⣿⣿⣿⣿⣿⣿⣿⣦⡑⢕⢤⠱⢐\n' +
+                       '⢠⢕⠅⣾⣿⠋⢿⣿⣿⣿⠉⣿⣿⣷⣦⣶⣽⣿⣿⠈⣿⣿⣿⣿⠏⢹⣷⣷⡅⢐\n' +
+                       '⣔⢕⢥⢻⣿⡀⠈⠛⠛⠁⢠⣿⣿⣿⣿⣿⣿⣿⣿⡀⠈⠛⠛⠁⠄⣼⣿⣿⡇⢔\n' +
+                       '⢕⢕⢽⢸⢟⢟⢖⢖⢤⣶⡟⢻⣿⡿⠻⣿⣿⡟⢀⣿⣦⢤⢤⢔⢞⢿⢿⣿⠁⢕\n' +
+                       '⢕⢕⠅⣐⢕⢕⢕⢕⢕⣿⣿⡄⠛⢀⣦⠈⠛⢁⣼⣿⢗⢕⢕⢕⢕⢕⢕⡏⣘⢕\n' +
+                       '⢕⢕⠅⢓⣕⣕⣕⣕⣵⣿⣿⣿⣾⣿⣿⣿⣿⣿⣿⣿⣷⣕⢕⢕⢕⢕⡵⢀⢕⢕\n' +
+                       '⢑⢕⠃⡈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢃⢕⢕⢕\n' +
+                       '⣆⢕⠄⢱⣄⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⢁⢕⢕⠕⢁\n' +
+                       '⣿⣦⡀⣿⣿⣷⣶⣬⣍⣛⣛⣛⡛⠿⠿⠿⠛⠛⢛⣛⣉⣭⣤⣂⢜⠕⢑⣡⣴⣿')
 
 
-async def purge(message: discord.message, lim=100):
+async def purge(message: discord.message, lim: int):
     await message.channel.send(f'Purging {lim} messages')
     await message.channel.send('.')
     await message.channel.send('.')
