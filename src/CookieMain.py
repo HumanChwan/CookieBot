@@ -8,7 +8,7 @@ import dataService.data_service as dt_srv
 import data.mongo_setup as mongo_setup
 
 # load_dotenv()
-# TOKEN = os.getenv('DISCORD_TOKEN')
+TOKEN = os.getenv('DISCORD_TOKEN')
 
 
 intents = discord.Intents.all()
