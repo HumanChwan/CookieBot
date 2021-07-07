@@ -668,11 +668,8 @@ async def handle_matrixify(command_list: List[str], channel: discord.channel):
             await error_matrixify(channel)
             return
 
-        if m > 5:
-            m = 5
-
-        if n > 25:
-            n = 25
+        m = max(m, 25)
+        n = max(n, 25)
 
     if emoji_string == '':
         emoji_string = f'<{animated(emoji.animated)}:{emoji.name}:{emoji._id}>'
