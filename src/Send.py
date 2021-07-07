@@ -4,6 +4,10 @@ from typing import List, Optional
 
 import discord
 import asyncio
+
+import emoji as EMOJI
+
+import MathCookie
 import dataService.data_service as dt_srv
 from data.guild_show import GuildPretty
 from data.member_show import MemberPretty
@@ -591,3 +595,94 @@ async def error_purge(channel: discord.channel):
 async def online_members(members, channel: discord.channel):
     for member in members:
         await channel.send(f'{member.name} is `{member.status}`')
+
+
+async def error_matrixify(channel: discord.channel):
+    await channel.send(':cookie: **|** <:yikes:845396328325447680> not valid matrixification!')
+
+
+async def bad_request_error(channel: discord.channel):
+    await channel.send(':cookie: **|** <:yikes:845396328325447680> dem what did you even do?!')
+
+
+def is_valid_emoji(emoji_alias: str) -> Optional[Emoji]:
+    if emoji_alias[0] == emoji_alias[-1] == ':':
+        return dt_srv.get_emote(emoji_alias[1:-1])
+
+    emoji_list = emoji_alias.split(':')
+
+    if len(emoji_list) != 3:
+        return None
+
+    if emoji_list[0] not in ('<', '<a'):
+        return None
+
+    if emoji_list[2][-1] != '>':
+        return None
+
+    try:
+        id_emoji = int(emoji_list[2][:-1])
+    except ValueError:
+        return None
+
+    if ' ' in emoji_list[1]:
+        return None
+
+    emoji = Emoji()
+
+    emoji.name = emoji_list[1]
+    emoji._id = id_emoji
+    emoji.animated = emoji_list == '<a'
+    emoji.guild_id = 101
+
+    return emoji
+
+
+async def handle_matrixify(command_list: List[str], channel: discord.channel):
+    if (not command_list) or len(command_list) > 2:
+        await error_matrixify(channel)
+        return
+
+    emoji = is_valid_emoji(command_list[0])
+    emoji_string = ''
+    if command_list[0] in EMOJI.EMOJI_UNICODE['en'].values():
+        emoji_string = command_list[0]
+    elif not emoji:
+        await error_matrixify(channel)
+        return
+
+    m = 5
+    n = 5
+
+    if len(command_list) == 2:
+        dimensions = command_list[1].split('x')
+
+        if len(dimensions) != 2:
+            await error_matrixify(channel)
+            return
+
+        try:
+            m = int(dimensions[0])
+            n = int(dimensions[1])
+        except ValueError:
+            await error_matrixify(channel)
+            return
+
+        if m > 5:
+            m = 5
+
+        if n > 25:
+            n = 25
+
+    if emoji_string == '':
+        emoji_string = f'<{animated(emoji.animated)}:{emoji.name}:{emoji._id}>'
+    string_to_send = ''
+    for _ in range(m):
+        for __ in range(n):
+            string_to_send += emoji_string
+        string_to_send += '\n'
+
+    try:
+        await channel.send(string_to_send)
+    except discord.errors.HTTPException:
+        await bad_request_error(channel)

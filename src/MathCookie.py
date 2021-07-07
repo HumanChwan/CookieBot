@@ -23,7 +23,9 @@ def precedence(operator):
         return 0
 
 
-def check_integer(num, if_decimal):
+def check_integer(num: str, if_decimal: bool):
+    if num == '':
+        return False
     cnt = 0
     for i in num:
         if i == '.':

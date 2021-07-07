@@ -108,20 +108,21 @@ async def message_event_handling(message_meta: discord.message):
     if MathCookie.check_integer(message_meta.content, False):
         await cool_game_input_process(message_meta)
 
-    message_as_list = message_meta.content.replace('`', '').replace('_', '').replace('|', '').split()
+    message_as_list = message_meta.content.replace('`', '').replace('|', '').split()
 
     if not message_as_list:
         return
 
     prefix_acceptable = dt_srv.find_prefix_by_guild_id(message_meta.guild.id)
 
-    await Send.try_formatted_interpreter(message_meta)
+    if message_as_list[0] not in prefix_acceptable:
+        await Send.try_formatted_interpreter(message_meta)
 
     if message_meta.content.lower() in ('uwu', 'owo'):
         await Send.uwu(message_meta.channel)
 
-    if message_meta.content.lower() == 'get members status':
-        await Send.online_members(message_meta.guild.members, message_meta.channel)
+    # if message_meta.content.lower() == 'get members status':
+    #     await Send.online_members(message_meta.guild.members, message_meta.channel)
 
     if message_as_list[0] in prefix_acceptable:
         message_as_list.remove(message_as_list[0])
@@ -153,6 +154,10 @@ async def message_event_handling(message_meta: discord.message):
         elif command == 'coolgame':
             message_as_list.remove(message_as_list[0])
             await cool_game_io(message_meta, message_as_list[0].lower())
+
+        elif command == 'matrixify':
+            message_as_list.remove(message_as_list[0])
+            await Send.handle_matrixify(message_as_list, message_meta.channel)
 
         elif command in QuitCmd:
             if turn_off(message_meta.author):
@@ -190,7 +195,6 @@ async def message_event_handling(message_meta: discord.message):
             #         await Send.emoji_cheat_sheet(message_meta.author, 0, message_meta, None)
             #     elif message_as_list[0].lower() in ('false', '0', 'no', 'f', 'n'):
             #         await Send.emoji_cheat_sheet(message_meta.author, 0, message_meta, False)
-                
 
         else:
             await Send.cookie_quote(message_meta.channel)
