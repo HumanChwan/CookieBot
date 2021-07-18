@@ -189,7 +189,8 @@ async def repeat_input(message_meta: discord.message):
 
 
 async def publish_result(message_meta: discord.message, partial_result, tries_left: int):
-    embed_one = discord.Embed(title='Guess Results', description=f'Player: <@{message_meta.author.id}>')
+    embed_one = discord.Embed(title='Guess Results', description=f'Player: <@{message_meta.author.id}>',
+                              color=discord.Color.from_rgb(18, 198, 86))
     embed_one.add_field(name='Correct Digits:', value=str(partial_result[0]))
     embed_one.add_field(name='Correct Places:', value=str(partial_result[1]))
     embed_one.add_field(name='Tries Left:', value=str(tries_left))
@@ -558,7 +559,7 @@ async def emoji_cheat_sheet(author, page_change: int, message_meta: discord.mess
         for emote in emotes:
             # __:{emote.name}:__ ({emote._id}) :
             embed_emote.add_field(name=f'**{ind}.** <{animated(emote.animated)}:{emote.name}:{emote._id}>',
-                                  value=f'**:{emote.name}:** | ID : {emote._id}', inline=False)
+                                  value=f'`:{emote.name}:` | ID : {emote._id}', inline=False)
             ind += 1
 
         await message_meta.edit(content=None, embed=embed_emote)
@@ -683,3 +684,34 @@ async def handle_matrixify(command_list: List[str], channel: discord.channel):
         await channel.send(string_to_send)
     except discord.errors.HTTPException:
         await bad_request_error(channel)
+
+
+async def fun_command(message_meta: discord.message, command: str):
+    boi = MathCookie.random_between(0, 100)
+    mention = message_meta.mentions
+    to_be_mentioned = f'<@{message_meta.author.id}>'
+
+    if mention:
+        to_be_mentioned = f'<@{mention[0].id}>'
+
+    if not mention:
+        mention = message_meta.role_mentions
+        if mention:
+            to_be_mentioned = f'{mention[0].mention}'
+
+    end = 'gay'
+
+    if command in {'simp', 'simprate'}:
+        end = 'simp'
+
+    await message_meta.channel.send(f'{to_be_mentioned} is {boi}% {end}')
+
+
+async def send_back_embed(channel: discord.channel, message_as_list: List[str]):
+    embed: discord.Embed = discord.Embed(title='sendBack', description='_ _', colour=3371166)
+    embed.add_field(name='send Back', value=' '.join(message_as_list))
+    await channel.send(content=None, embed=embed)
+
+
+async def send_back(channel: discord.channel, message_as_list: List[str]):
+    await channel.send(' '.join(message_as_list))

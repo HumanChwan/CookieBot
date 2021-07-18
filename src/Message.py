@@ -12,27 +12,6 @@ QuitCmd = ('endgame', 'terminate', 'quit', 'exit', 'end')
 perform_action = ('slap', 'kick', 'spank', 'kill', 'punch', 'lewd', 'kiss')
 
 
-async def fun_command(message_meta: discord.message, command: str):
-    boi = MathCookie.random_between(0, 100)
-    mention = message_meta.mentions
-    to_be_mentioned = f'<@{message_meta.author.id}>'
-
-    if mention:
-        to_be_mentioned = f'<@{mention[0].id}>'
-
-    if not mention:
-        mention = message_meta.role_mentions
-        if mention:
-            to_be_mentioned = f'{mention[0].mention}'
-
-    end = 'gay'
-
-    if command in {'simp', 'simprate'}:
-        end = 'simp'
-
-    await message_meta.channel.send(f'{to_be_mentioned} is {boi}% {end}')
-
-
 def turn_on(member: discord.member):
     return dt_srv.cool_game_turn_on(member.guild.id, member.id)
 
@@ -77,7 +56,7 @@ async def cool_game_input_process(message_meta: discord.message):
     done = partial_result[1] == 4
     await Send.publish_result(message_meta, partial_result, data[1]-1)
 
-    if data[1]-1 == 0:
+    if data[1]-1 == 0 and not done:
         await Send.ran_out_of_tries(message_meta, data[0])
 
     dt_srv.update_member_cool_game_list(message_meta.author.guild.id, message_meta.author.id, done)
@@ -164,7 +143,7 @@ async def message_event_handling(message_meta: discord.message):
                 await Send.terminate_successful(message_meta)
 
         elif command in ('simp', 'simprate', 'gay', 'gayrate'):
-            await fun_command(message_meta, command)
+            await Send.fun_command(message_meta, command)
 
         elif command in ('stats', 'stat', 'server', 'info', 'leaderboard'):
             await show_stats_guild(message_meta.author, message_meta.guild, message_meta.channel)
@@ -172,7 +151,7 @@ async def message_event_handling(message_meta: discord.message):
 
         elif command in ('mystats', 'mystat', 'myinfo', 'profile'):
             await show_stats_member(message_meta.author,
-                              message_meta.mentions, message_meta.channel)
+                                    message_meta.mentions, message_meta.channel)
             # <----Member Info----->
         elif command in ('pfp', 'dp', 'av', 'avatar'):
             mentions = message_meta.mentions
@@ -195,6 +174,13 @@ async def message_event_handling(message_meta: discord.message):
             #         await Send.emoji_cheat_sheet(message_meta.author, 0, message_meta, None)
             #     elif message_as_list[0].lower() in ('false', '0', 'no', 'f', 'n'):
             #         await Send.emoji_cheat_sheet(message_meta.author, 0, message_meta, False)
+
+        elif command in ('sendback', 'sendbackembed'):
+            message_as_list.remove(message_as_list[0])
+            if command == 'sendbackembed':
+                await Send.send_back_embed(message_meta.channel, message_as_list)
+            else:
+                await Send.send_back(message_meta.channel, message_as_list)
 
         else:
             await Send.cookie_quote(message_meta.channel)
